@@ -1,11 +1,20 @@
 #include "MouseListener.h"
+#include "Exception/AllocMemoryException.h"
+#include <new>
 
 MouseListener::MouseListener()
 {
-    server = new QTcpServer(this);
-    connect(server, SIGNAL(newConnection()),this, SLOT(onNewConnection()));
-    portNumber = 0;
-    qDebug()<< "ML ctor";
+    try
+    {
+        server = new QTcpServer(this);
+        connect(server, SIGNAL(newConnection()),this, SLOT(onNewConnection()));
+        portNumber = 0;
+        qDebug()<< "ML ctor";
+    }
+    catch (std::bad_alloc& exception)
+    {
+        throw new AllocMemoryException("Error memory alloc MouseListener::MouseListener()");
+    }
 }
 
 MouseListener::~MouseListener()

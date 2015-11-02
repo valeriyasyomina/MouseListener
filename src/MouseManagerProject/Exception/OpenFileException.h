@@ -6,13 +6,11 @@
 class OpenFileException: public Exception
 {
 public:
-    OpenFileException(char* messageToSet)
+    explicit OpenFileException(std::string messageToSet)
     {
-        int messageLength = strlen(messageToSet);
-        message = new char[messageLength + 1];
-        memmove(message, messageToSet, messageLength + 1);
+        message = messageToSet;
     }
-    ~OpenFileException() {}
+    ~OpenFileException() throw (){}
 };
 
 #endif // OPENFILEEXCEPTION_H

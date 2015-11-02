@@ -6,17 +6,11 @@
 class SendDeviceCommandException: public Exception
 {
 public:
-    SendDeviceCommandException(char* messageToSet)
+    explicit SendDeviceCommandException(std::string messageToSet)
     {
-        int messageLength = strlen(messageToSet);
-        message = new char[messageLength + 1];
-        memmove(message, messageToSet, messageLength + 1);
+        message = messageToSet;
     }
-    ~SendDeviceCommandException()
-    {
-        int a = 0;
-        a = 10;
-    }
+    ~SendDeviceCommandException() throw (){}
 };
 
 #endif // SENDDEVICECOMMANDEXCEPTION_H

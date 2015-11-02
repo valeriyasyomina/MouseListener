@@ -27,6 +27,7 @@ HEADERS  += mainwindow.h \
     Exception/SendDeviceCommandException.h \
     MouseListener/MouseListener.h \
     Singleton/Singleton.h \
-    Facade/Facade.h
+    Facade/Facade.h \
+    Exception/AllocMemoryException.h
 
 FORMS    += mainwindow.ui
