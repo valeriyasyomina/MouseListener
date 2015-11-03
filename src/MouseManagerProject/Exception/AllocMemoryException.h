@@ -1,7 +1,7 @@
 #ifndef ALLOCMEMORYEXCEPTION_H
 #define ALLOCMEMORYEXCEPTION_H
 
-#include "Exception/Exception.h"
+#include "Exception.h"
 
 class AllocMemoryException : public Exception
 {

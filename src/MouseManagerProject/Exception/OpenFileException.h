@@ -1,7 +1,7 @@
 #ifndef OPENFILEEXCEPTION_H
 #define OPENFILEEXCEPTION_H
 
-#include <Exception/Exception.h>
+#include "Exception.h"
 
 class OpenFileException: public Exception
 {

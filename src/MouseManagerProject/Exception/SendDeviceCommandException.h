@@ -1,7 +1,7 @@
 #ifndef SENDDEVICECOMMANDEXCEPTION_H
 #define SENDDEVICECOMMANDEXCEPTION_H
 
-#include "Exception/Exception.h"
+#include "Exception.h"
 
 class SendDeviceCommandException: public Exception
 {

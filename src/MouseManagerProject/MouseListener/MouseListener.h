@@ -22,6 +22,8 @@ public slots:
     void onNewConnection();
     void onReadyRead();
     void onDisconnected();
+signals:
+    void MessageReceived(const char* message);
 };
 
 #endif // MOUSELISTENER_H

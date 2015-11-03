@@ -34,7 +34,6 @@ void MouseListener::StartListen()
     if (!server->isListening())
     {
         server->listen(QHostAddress::Any, portNumber);
-
         qDebug()<< "Started";
     }
 }
@@ -70,11 +69,14 @@ void MouseListener::onNewConnection()
 ///
 void MouseListener::onReadyRead()
 {
-    //char data[128];
+    char data[128];
     qDebug()<< "server: read";
-          //  int readerd = socket->read(data, 128);
+    int readerd = socket->read(data, 128);
+    data[readerd] = '\0';
     qDebug() << "Client sended to me:";
-    qDebug()<< socket->readAll();
+    qDebug() << data;
+  //  qDebug()<< socket->readAll();
+    emit MessageReceived(data);
 }
 
 
