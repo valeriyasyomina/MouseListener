@@ -3,9 +3,6 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <string.h>
-#include <Exception/OpenFileException.h>
-#include <Exception/SendDeviceCommandException.h>
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -13,10 +10,12 @@
 #include "Exception/ShellCommandExecuteException.h"
 #include "Exception/NullInputDataException.h"
 #include "Exception/ErrorInputDataException.h"
+#include <Exception/FileException.h>
+#include <Exception/SendDeviceCommandException.h>
 #include <iostream>
 #include <fstream>
 
-const int MAX_BUFFER_SIZE = 64;
+
 
 class DeviceManager : public QObject
 {
@@ -26,7 +25,7 @@ private:
     std::string loadedModuleName;
 public:
     DeviceManager(): deviceFileDescriptor(0) {}
-    ~DeviceManager();
+    ~DeviceManager() {}
 
     void OpenDeviceFile(const std::string& fileName);
     void CloseDeviceFile();

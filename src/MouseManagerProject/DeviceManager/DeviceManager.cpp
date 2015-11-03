@@ -1,14 +1,5 @@
 #include "DeviceManager.h"
 
-DeviceManager::~DeviceManager()
-{
-    /*if (loadedModuleName)
-    {
-        delete [] loadedModuleName;
-        loadedModuleName = NULL;
-    }*/
-}
-
 ///
 /// \brief DeviceManager::OpenDeviceFile Открывает файл устройтсва по заданному имени
 /// \param fileName Имя файла
@@ -18,7 +9,7 @@ void DeviceManager::OpenDeviceFile(const std::string& fileName)
     deviceFileDescriptor = open(fileName.c_str(),O_RDWR);
     if (deviceFileDescriptor < 0)
     {
-        throw OpenFileException("Error open file: no such file! Kernel module was not loaded!");
+        throw FileException("Error open file: no such file! Kernel module was not loaded!");
     }
 }
 
@@ -27,7 +18,8 @@ void DeviceManager::OpenDeviceFile(const std::string& fileName)
 ///
 void DeviceManager::CloseDeviceFile()
 {
-    close(deviceFileDescriptor);
+    if (close(deviceFileDescriptor) < 0)
+        throw FileException("Error close device file!");
 }
 
 ///
@@ -52,7 +44,7 @@ void DeviceManager::InsertDeviceModule(const std::string& modulePath)
     {
         std::ifstream inputFile(modulePath.c_str());
         if (!inputFile.is_open())
-            throw OpenFileException("Kernel module with such name doesn't exist!");
+            throw FileException("Kernel module with such name doesn't exist!");
 
         inputFile.close();
         GetModuleNameFromPath(modulePath);

@@ -4,6 +4,10 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include "Exception/ServerListenException.h"
+#include "Exception/SocketReadDataException.h"
+
+static const int MAX_BUFFER_SIZE = 64;
 
 class MouseListener: public QObject
 {

@@ -33,7 +33,8 @@ void MouseListener::StartListen()
 {
     if (!server->isListening())
     {
-        server->listen(QHostAddress::Any, portNumber);
+        if (!server->listen(QHostAddress::Any, portNumber))
+            throw ServerListenException("Error server start listen!");
         qDebug()<< "Started";
     }
 }
@@ -69,14 +70,15 @@ void MouseListener::onNewConnection()
 ///
 void MouseListener::onReadyRead()
 {
-    char data[128];
+    char socketData[MAX_BUFFER_SIZE];
     qDebug()<< "server: read";
-    int readerd = socket->read(data, 128);
-    data[readerd] = '\0';
+    int numberOfBytes = socket->read(socketData, MAX_BUFFER_SIZE);
+    if (numberOfBytes <= 0)
+        throw SocketReadDataException("Error read data from socket");
+    socketData[numberOfBytes] = '\0';
     qDebug() << "Client sended to me:";
-    qDebug() << data;
-  //  qDebug()<< socket->readAll();
-    emit MessageReceived(data);
+    qDebug() << socketData;
+    emit MessageReceived(socketData);
 }
 
 

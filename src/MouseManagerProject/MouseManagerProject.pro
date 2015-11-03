@@ -23,7 +23,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     DeviceManager/DeviceManager.h \
     Exception/Exception.h \
-    Exception/OpenFileException.h \
     Exception/SendDeviceCommandException.h \
     MouseListener/MouseListener.h \
     Singleton/Singleton.h \
@@ -31,6 +30,9 @@ HEADERS  += mainwindow.h \
     Exception/AllocMemoryException.h \
     Exception/ShellCommandExecuteException.h \
     Exception/NullInputDataException.h \
-    Exception/ErrorInputDataException.h
+    Exception/ErrorInputDataException.h \
+    Exception/ServerListenException.h \
+    Exception/FileException.h \
+    Exception/SocketReadDataException.h
 
 FORMS    += mainwindow.ui
