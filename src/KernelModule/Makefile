@@ -1,4 +1,4 @@
-obj-m := usbmouse.o 
+obj-m := MouseModule.o 
 
 
 KDIR  := /lib/modules/$(shell uname -r)/build

@@ -9,6 +9,10 @@
 *.so
 *.dll
 *.dylib
+*.ko
+*.mod.c
+*.order 
+*.symvers
 
 # Qt-es
 
