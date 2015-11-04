@@ -63,6 +63,8 @@ void MouseListener::onNewConnection()
     {
         qDebug()<<socket->peerPort();
     }
+   // char msg[] = "Hello from server";
+    //socket->write(msg, strlen(msg));
 }
 
 ///
