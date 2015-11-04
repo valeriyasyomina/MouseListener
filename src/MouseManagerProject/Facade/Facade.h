@@ -3,9 +3,11 @@
 
 #include "DeviceManager/DeviceManager.h"
 #include "MouseListener/MouseListener.h"
+#include <QObject>
 
-class Facade
+class Facade: public QObject
 {
+    Q_OBJECT
 private:
     MouseListener* mouseListener;
     DeviceManager* deviceManager;

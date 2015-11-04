@@ -1,11 +1,20 @@
 #include "MouseListener.h"
+#include "Exception/AllocMemoryException.h"
+#include <new>
 
 MouseListener::MouseListener()
 {
-    server = new QTcpServer(this);
-    connect(server, SIGNAL(newConnection()),this, SLOT(onNewConnection()));
-    portNumber = 0;
-    qDebug()<< "ML ctor";
+    try
+    {
+        server = new QTcpServer(this);
+        connect(server, SIGNAL(newConnection()),this, SLOT(onNewConnection()));
+        portNumber = 0;
+        qDebug()<< "ML ctor";
+    }
+    catch (std::bad_alloc& exception)
+    {
+        throw new AllocMemoryException("Error memory alloc MouseListener::MouseListener()");
+    }
 }
 
 MouseListener::~MouseListener()
@@ -24,8 +33,8 @@ void MouseListener::StartListen()
 {
     if (!server->isListening())
     {
-        server->listen(QHostAddress::Any, portNumber);
-
+        if (!server->listen(QHostAddress::Any, portNumber))
+            throw ServerListenException("Error server start listen!");
         qDebug()<< "Started";
     }
 }
@@ -54,6 +63,8 @@ void MouseListener::onNewConnection()
     {
         qDebug()<<socket->peerPort();
     }
+   // char msg[] = "Hello from server";
+    //socket->write(msg, strlen(msg));
 }
 
 ///
@@ -61,11 +72,15 @@ void MouseListener::onNewConnection()
 ///
 void MouseListener::onReadyRead()
 {
-    //char data[128];
+    char socketData[MAX_BUFFER_SIZE];
     qDebug()<< "server: read";
-          //  int readerd = socket->read(data, 128);
+    int numberOfBytes = socket->read(socketData, MAX_BUFFER_SIZE);
+    if (numberOfBytes <= 0)
+        throw SocketReadDataException("Error read data from socket");
+    socketData[numberOfBytes] = '\0';
     qDebug() << "Client sended to me:";
-    qDebug()<< socket->readAll();
+    qDebug() << socketData;
+    emit MessageReceived(socketData);
 }
 
 

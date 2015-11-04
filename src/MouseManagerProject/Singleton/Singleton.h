@@ -8,7 +8,6 @@ class Singleton
 private:
     Singleton();
     ~Singleton();
-    Singleton(const Singleton& singleton) {}
 public:
     static Singleton& Instance() {return instance;}
     Facade* GetFacade();
