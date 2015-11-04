@@ -1,31 +1,21 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
-#include <string.h>
+#include <string>
 #include <new>
 
-class Exception
+class Exception : public std::exception
 {
 protected:
-    char* message;
+    std::string message;
 public:
-    Exception() {}
-    Exception(char* messageToSet)
+    explicit Exception() {}
+    explicit Exception(std::string messageToSet)
     {
-        int messageLength = strlen(messageToSet);
-        message = new char[messageLength + 1];
-        memmove(message, messageToSet, messageLength + 1);
+        message = messageToSet;
     }
-    virtual ~Exception()
-    {
-        if (message)
-        {
-            delete [] message;
-            message = NULL;
-        }
-    }
-
-    char* GetMessage() const {return message;}
+    virtual ~Exception() throw (){}
+    virtual const char* GetMessage() const {return message.c_str();}
 };
 
 #endif // EXCEPTION_H
