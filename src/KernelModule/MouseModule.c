@@ -8,6 +8,17 @@
 #include <linux/kernel.h>
 #include <linux/usb.h>
 
+#define LEFT_BUTTON_PRESSED 1
+#define RIGHT_BUTTON_PRESSED 2
+#define BUTTON_MIDDLE_PRESSED 3
+#define BUTTON_EXTRA_PRESSED 4
+#define BUTTON_SIDE_PRESSED 5
+#define DOUBLE_CLICK 6
+
+
+#define KEY_WAS_PRESSED 7
+#define KEY_WAS_RELEASED 0
+
 /* Представление устройства ввода */
 /* Representation of an input device */
 struct input_dev *vms_input_dev; 
@@ -24,13 +35,46 @@ coordinates to the virtual mouse driver */
 static ssize_t write_vms(struct device *dev, struct device_attribute *attr, const char *buffer, size_t count)
 {
 	int x = 0, y = 0;  
+	int command_type = 0;
 
-	sscanf(buffer, "%d%d", &x, &y);	
+	sscanf(buffer, "%d%d%d", &command_type, &x, &y);
 
 	input_report_rel(vms_input_dev, REL_X, x);
 	input_report_rel(vms_input_dev, REL_Y, y);
-	input_sync(vms_input_dev);
 
+	if (command_type == LEFT_BUTTON_PRESSED)
+	{
+		input_report_key(vms_input_dev, BTN_LEFT, KEY_WAS_PRESSED);
+		input_report_key(vms_input_dev, BTN_LEFT, KEY_WAS_RELEASED);
+	}
+	else if (command_type == RIGHT_BUTTON_PRESSED)
+	{
+		input_report_key(vms_input_dev, BTN_RIGHT, KEY_WAS_PRESSED);
+		input_report_key(vms_input_dev, BTN_RIGHT, KEY_WAS_RELEASED);
+	}
+	else if (command_type == BUTTON_SIDE_PRESSED)
+	{
+		input_report_key(vms_input_dev, BTN_SIDE, KEY_WAS_PRESSED);
+		input_report_key(vms_input_dev, BTN_SIDE, KEY_WAS_RELEASED);
+	}
+	else if (command_type == BUTTON_EXTRA_PRESSED)
+	{
+		input_report_key(vms_input_dev, BTN_EXTRA, KEY_WAS_PRESSED);
+		input_report_key(vms_input_dev, BTN_EXTRA, KEY_WAS_RELEASED);
+	}
+	else if (command_type == BUTTON_MIDDLE_PRESSED)
+	{
+		input_report_key(vms_input_dev, BTN_MIDDLE, KEY_WAS_PRESSED);
+		input_report_key(vms_input_dev, BTN_MIDDLE, KEY_WAS_RELEASED);
+	}
+	else if (command_type == DOUBLE_CLICK)
+	{
+		input_report_key(vms_input_dev, BTN_LEFT, KEY_WAS_PRESSED);   
+		input_report_key(vms_input_dev, BTN_LEFT, KEY_WAS_RELEASED);	
+		input_report_key(vms_input_dev, BTN_LEFT, KEY_WAS_PRESSED);	
+		input_report_key(vms_input_dev, BTN_LEFT, KEY_WAS_RELEASED);	
+	}	
+	input_sync(vms_input_dev);
 	return count;
 }
 
