@@ -13,6 +13,11 @@
 *.mod.c
 *.order 
 *.symvers
+*.ko.cmd
+*.mod.o.cmd
+*.o.cmd
+src/KernelModule/.tmp_versions/
+*.order
 
 # Qt-es
 
