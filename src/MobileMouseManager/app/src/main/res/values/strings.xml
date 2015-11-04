@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">My Application</string>
-
-    <string name="default_ip">127.0.0.1</string>
-    <string name="default_port">8080</string>
-    <string name="action_settings">Settings</string>
-</resources>
