@@ -1,5 +1,7 @@
 package com.example.lera.mobilemousemanager;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,11 +20,15 @@ import android.widget.EditText;
 import android.app.AlertDialog;
 import android.widget.TextView;
 
+
 public class MainActivity extends AppCompatActivity {
 
-  //  TextView textResponse;
-    EditText editTextAddress, editTextPort;
-    Button buttonConnect, buttonClear;
+    private TextView textResponse;
+    private EditText editTextAddress, editTextPort;
+    private Button buttonConnect, buttonClear;
+    private Socket serverSocket = null;
+    private boolean isConnected = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,34 +39,38 @@ public class MainActivity extends AppCompatActivity {
         editTextPort = (EditText)findViewById(R.id.Port);
         buttonConnect = (Button)findViewById(R.id.ButtonConnect);
         buttonClear = (Button)findViewById(R.id.ButtonClear);
-       // textResponse = (TextView)findViewById(R.id.response);
-
-
-       buttonConnect.setOnClickListener(buttonConnectOnClickListener);
+        textResponse = (TextView)findViewById(R.id.InfoText);
+        buttonConnect.setOnClickListener(buttonConnectOnClickListener);
     }
 
     OnClickListener buttonConnectOnClickListener =  new OnClickListener(){
-
                 @Override
                 public void onClick(View arg0) {
                     ConnectThread connectThread = new ConnectThread();
                     new Thread(connectThread).start();
-                  /*  MyClientTask myClientTask = new MyClientTask(
-                            editTextAddress.getText().toString(),
-                            Integer.parseInt(editTextPort.getText().toString()));
-                    myClientTask.execute();*/
                 }
     };
 
+
+
     @Override
-    public  boolean onTouchEvent(MotionEvent e) {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Title");
-        builder.setMessage("Message");
-        builder.setPositiveButton("OK", null);
-        AlertDialog dialog = builder.show();
-
+    public  boolean onTouchEvent(MotionEvent motionEvent) {
+        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+            textResponse.setText("Down");
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+            dlgAlert.setMessage("This is an alert with no consequence");
+            dlgAlert.setTitle("App Title");
+            dlgAlert.setPositiveButton("OK", null);
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
+        }
+        else  if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+            if (isConnected) {
+                float x = motionEvent.getX();
+                float y = motionEvent.getY();
+                textResponse.setText(Float.toString(x) + " " + Float.toString(y));
+            }
+        }
         return true;
     }
     @Override
@@ -78,7 +88,13 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+            dlgAlert.setMessage("logout");
+            dlgAlert.setTitle("App Title");
+            dlgAlert.setPositiveButton("OK", null);
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -87,16 +103,34 @@ public class MainActivity extends AppCompatActivity {
 
     class ConnectThread implements Runnable {
 
+
+
         public void run() {
-            Socket socket = null;
+         //   Socket socket = null;
             try {
-                socket = new Socket(editTextAddress.getText().toString(),
+                serverSocket = new Socket(editTextAddress.getText().toString(),
                         Integer.parseInt(editTextPort.getText().toString()));
+                showMessage("Connection ok", "Connection successfully established!");
+                isConnected = true;
             }
-            catch (IOException e) {
-                e.printStackTrace();
+            catch (IOException exception) {
+                exception.printStackTrace();
+                showMessage("Connection error", exception.getMessage());
             }
         }
+    }
+
+    public void showMessage(final String title, final String message) {
+        MainActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(MainActivity.this);
+                dlgAlert.setMessage(message);
+                dlgAlert.setTitle(title);
+                dlgAlert.setPositiveButton("OK", null);
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
+            }
+        });
     }
 }
 

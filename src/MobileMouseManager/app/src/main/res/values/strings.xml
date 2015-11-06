@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">MobileMouseManager</string>
-    <string name="default_ip">195.19.54.102</string>
+    <string name="app_name">Mobile Mouse</string>
+    <string name="default_ip">192.168.0.14</string>
     <string name="default_port">8000</string>
     <string name="action_settings">Settings</string>
 </resources>
