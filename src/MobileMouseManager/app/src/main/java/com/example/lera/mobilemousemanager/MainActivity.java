@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         buttonClear = (Button)findViewById(R.id.ButtonClear);
        // textResponse = (TextView)findViewById(R.id.response);
 
+
        buttonConnect.setOnClickListener(buttonConnectOnClickListener);
     }
 
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View arg0) {
+                    ConnectThread connectThread = new ConnectThread();
+                    new Thread(connectThread).start();
                   /*  MyClientTask myClientTask = new MyClientTask(
                             editTextAddress.getText().toString(),
                             Integer.parseInt(editTextPort.getText().toString()));
@@ -65,8 +68,22 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+
+    class ConnectThread implements Runnable {
+
+        public void run() {
+            Socket socket = null;
+            try {
+                socket = new Socket(editTextAddress.getText().toString(),
+                        Integer.parseInt(editTextPort.getText().toString()));
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 
