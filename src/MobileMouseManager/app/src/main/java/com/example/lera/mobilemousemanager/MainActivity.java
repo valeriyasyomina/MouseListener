@@ -11,9 +11,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import android.os.AsyncTask;
 import android.view.View;
+import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.app.AlertDialog;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,6 +52,17 @@ public class MainActivity extends AppCompatActivity {
                 }
     };
 
+    @Override
+    public  boolean onTouchEvent(MotionEvent e) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Title");
+        builder.setMessage("Message");
+        builder.setPositiveButton("OK", null);
+        AlertDialog dialog = builder.show();
+
+        return true;
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
