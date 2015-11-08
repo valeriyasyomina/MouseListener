@@ -70,7 +70,12 @@ void MainWindow::on_pushButton_clicked()
 {
     try
     {
-        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("10 30");
+        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 10 30");
+        sleep(2);
+        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 50 100");
+        sleep(2);
+        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 100 30");
+        sleep(2);
     }
     catch (Exception& exception)
     {
