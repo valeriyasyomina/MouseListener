@@ -80,6 +80,7 @@ void MouseListener::onReadyRead()
     socketData[numberOfBytes] = '\0';
     qDebug() << "Client sended to me:";
     qDebug() << socketData;
+    qDebug() << "\n";
     emit MessageReceived(socketData);
 }
 
