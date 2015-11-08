@@ -1,34 +1,29 @@
 package com.example.lera.mobilemousemanager;
 
-import android.app.Activity;
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import android.os.AsyncTask;
 import android.view.View;
 import android.view.MotionEvent;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.app.AlertDialog;
 import android.widget.TextView;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textResponse;
     private EditText editTextAddress, editTextPort;
-    private Button buttonConnect, buttonClear;
+    private Button  buttonClear;
+    private  TextView mainTextInfo = null;
     private Socket serverSocket = null;
     private boolean isConnected = false;
-
+    DataOutputStream dataOutputStream = null;
+    DataInputStream dataInputStream = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,38 +32,49 @@ public class MainActivity extends AppCompatActivity {
 
         editTextAddress = (EditText)findViewById(R.id.Ip_address);
         editTextPort = (EditText)findViewById(R.id.Port);
-        buttonConnect = (Button)findViewById(R.id.ButtonConnect);
+
         buttonClear = (Button)findViewById(R.id.ButtonClear);
-        textResponse = (TextView)findViewById(R.id.InfoText);
-        buttonConnect.setOnClickListener(buttonConnectOnClickListener);
+        mainTextInfo = (TextView) findViewById(R.id.InfoText);
+
+        buttonClear.setOnClickListener(buttonClearClickListener);
+
+        buttonClear.setVisibility(View.INVISIBLE);
+        editTextAddress.setVisibility(View.INVISIBLE);
+        editTextPort.setVisibility(View.INVISIBLE);
     }
 
-    OnClickListener buttonConnectOnClickListener =  new OnClickListener(){
-                @Override
-                public void onClick(View arg0) {
-                    ConnectThread connectThread = new ConnectThread();
-                    new Thread(connectThread).start();
-                }
+
+    View.OnClickListener buttonClearClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            editTextPort.setText("");
+            editTextAddress.setText("");
+        }
     };
-
-
 
     @Override
     public  boolean onTouchEvent(MotionEvent motionEvent) {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            textResponse.setText("Down");
-            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+           /* AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
             dlgAlert.setMessage("This is an alert with no consequence");
             dlgAlert.setTitle("App Title");
             dlgAlert.setPositiveButton("OK", null);
             dlgAlert.setCancelable(true);
-            dlgAlert.create().show();
+            dlgAlert.create().show();*/
         }
-        else  if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+        else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
             if (isConnected) {
-                float x = motionEvent.getX();
-                float y = motionEvent.getY();
-                textResponse.setText(Float.toString(x) + " " + Float.toString(y));
+                try {
+                    String mouseCommand = "0 " + Integer.toString((int)motionEvent.getX()) + " " +
+                            Integer.toString((int)motionEvent.getY());
+                 //   byte[] byteArray = mouseCommand.getBytes();
+                    mainTextInfo.setText(mouseCommand);
+                    dataOutputStream.writeBytes(mouseCommand);
+                 //   dataInputStream.readUTF();
+                }
+                catch (Exception exception) {
+                    ShowMessage("Error send mouse coordinates", exception.getMessage());
+                }
             }
         }
         return true;
@@ -82,45 +88,144 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-            dlgAlert.setMessage("logout");
-            dlgAlert.setTitle("App Title");
-            dlgAlert.setPositiveButton("OK", null);
-            dlgAlert.setCancelable(true);
-            dlgAlert.create().show();
+        if (id == R.id.action_exit) {
+            CloseAppThread closeAppThread = new CloseAppThread();
+            new Thread(closeAppThread).start();
+            System.exit(0);
             return true;
+        }
+        else if (id == R.id.action_settings) {
+            if (isConnected) {
+                ShowMessage("Error", "To change setting disconnect first!");
+            }
+            else {
+                buttonClear.setVisibility(View.VISIBLE);
+                editTextAddress.setVisibility(View.VISIBLE);
+                editTextPort.setVisibility(View.VISIBLE);
+                mainTextInfo.setText("Input server IP address and port\n");
+                mainTextInfo.setVisibility(View.VISIBLE);
+            }
+            return true;
+        }
+        else  if (id == R.id.action_disconnect) {
+            DisconnectThread disconnectThread = new DisconnectThread();
+            new Thread(disconnectThread).start();
+            return true;
+        }
+        else  if (id == R.id.action_connect) {
+            ConnectThread connectThread = new ConnectThread();
+            new Thread(connectThread).start();
+            return  true;
+        }
+        else if (id == R.id.action_help) {
+            if (isConnected) {
+                ShowMessage("Error", "You must disconnect first!");
+            }
+            else {
+                buttonClear.setVisibility(View.INVISIBLE);
+                editTextAddress.setVisibility(View.INVISIBLE);
+                editTextPort.setVisibility(View.INVISIBLE);
+                mainTextInfo.setText("1. Press 'Connect' icon in menu to connect server.\n'" +
+                        "2. Press 'Settings' icon in menu to change server parameters.\n" +
+                        "3. Press 'Disconnect' icon in menu to disconnect from server.\n" +
+                        "4. Press 'Exit' icon in menu to close application.\n");
+                mainTextInfo.setVisibility(View.VISIBLE);
+            }
+            return  true;
         }
         return super.onOptionsItemSelected(item);
     }
 
 
     class ConnectThread implements Runnable {
-
-
-
         public void run() {
-         //   Socket socket = null;
             try {
-                serverSocket = new Socket(editTextAddress.getText().toString(),
-                        Integer.parseInt(editTextPort.getText().toString()));
-                showMessage("Connection ok", "Connection successfully established!");
-                isConnected = true;
+                if (isConnected) {
+                    ShowMessage("Connection error", "You have already been connected!");
+                }
+                else if (editTextAddress.getText().toString() == "" ||
+                        editTextPort.getText().toString() == "") {
+                    ShowMessage("Connection error", "Input IP address and port!");
+                }
+                else {
+                    serverSocket = new Socket(editTextAddress.getText().toString(),
+                            Integer.parseInt(editTextPort.getText().toString()));
+                    dataOutputStream = new DataOutputStream(serverSocket.getOutputStream());
+                    dataInputStream = new DataInputStream(serverSocket.getInputStream());
+                    ShowMessage("Connection ok", "Connection successfully established!");
+                    HideAllComponents();
+                    isConnected = true;
+                }
             }
-            catch (IOException exception) {
+            catch (Exception exception) {
                 exception.printStackTrace();
-                showMessage("Connection error", exception.getMessage());
+                ShowMessage("Connection error", exception.getMessage());
+                ShowMainAppInfo();
             }
         }
     }
 
-    public void showMessage(final String title, final String message) {
+    class DisconnectThread implements  Runnable {
+        public void run() {
+            try {
+                if (!isConnected) {
+                    ShowMessage("Disconnect error", "You have already been disconnected!");
+                }
+                else {
+                    serverSocket.close();
+                    isConnected = false;
+                    ShowMessage("Disconnect ok", "You have been successfully disconnected!");
+                    ShowMainAppInfo();
+                }
+            }
+            catch (Exception exception) {
+                exception.printStackTrace();
+                ShowMessage("Disconnect error", exception.getMessage());
+                ShowMainAppInfo();
+            }
+        }
+    }
+
+    class CloseAppThread implements  Runnable {
+        public void run() {
+            try {
+                if (isConnected) {
+                    serverSocket.close();
+                }
+            }
+            catch (Exception exception) {
+            }
+        }
+    }
+
+    public  void HideAllComponents() {
+        MainActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                buttonClear.setVisibility(View.INVISIBLE);
+                editTextAddress.setVisibility(View.INVISIBLE);
+                editTextPort.setVisibility(View.INVISIBLE);
+                mainTextInfo.setVisibility(View.VISIBLE); //invisible
+            }
+        });
+    }
+    public  void ShowMainAppInfo() {
+        MainActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                buttonClear.setVisibility(View.INVISIBLE);
+                editTextAddress.setVisibility(View.INVISIBLE);
+                editTextPort.setVisibility(View.INVISIBLE);
+                mainTextInfo.setText("Mobile mouse application was developed for remote PC mouse control from mobile device.");
+                mainTextInfo.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    public void ShowMessage(final String title, final String message) {
         MainActivity.this.runOnUiThread(new Runnable() {
             public void run() {
                 AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(MainActivity.this);
@@ -135,20 +240,3 @@ public class MainActivity extends AppCompatActivity {
 }
 
 
-/*public class MyClientTask extends AsyncTask<Void, Void, Void> {
-
-    String dstAddress;
-    int dstPort;
-    String response = "";
-
-    MyClientTask(String addr, int port) {
-        dstAddress = addr;
-        dstPort = port;
-    }
-    @Override
-    protected Void doInBackground(Void... arg0) {
-
-        Socket socket = null;
-        return  null;
-    }
-}*/
