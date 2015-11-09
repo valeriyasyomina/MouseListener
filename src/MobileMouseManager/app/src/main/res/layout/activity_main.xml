@@ -4,8 +4,8 @@
     android:layout_height="fill_parent">
 
     <TextView
-        android:id="@+id/InfoText"
-        android:text="@string/TextInfo"
+        android:id="@+id/ApplicationInfoText"
+        android:text="@string/ApplicationInfo"
         android:layout_width="300dp"
         android:layout_height="wrap_content" />
     <EditText
