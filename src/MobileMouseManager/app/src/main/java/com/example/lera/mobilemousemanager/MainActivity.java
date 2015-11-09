@@ -13,17 +13,21 @@ import android.app.AlertDialog;
 import android.widget.TextView;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
-
+import android.view.Display;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText editTextAddress, editTextPort;
     private Button  buttonClear;
-    private  TextView mainTextInfo = null;
+    private TextView mainTextInfo = null;
     private Socket serverSocket = null;
     private boolean isConnected = false;
     DataOutputStream dataOutputStream = null;
     DataInputStream dataInputStream = null;
+    int screenWidth = 0;
+    int screenHeight = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,14 @@ public class MainActivity extends AppCompatActivity {
         buttonClear.setVisibility(View.INVISIBLE);
         editTextAddress.setVisibility(View.INVISIBLE);
         editTextPort.setVisibility(View.INVISIBLE);
+
+        WindowManager windowManager = this.getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+
+        screenWidth = metrics.widthPixels;
+        screenHeight = metrics.heightPixels;
     }
 
 
