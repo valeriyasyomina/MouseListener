@@ -10,9 +10,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QDesktopWidget desktop;
-    QSize screenSize = desktop.geometry().size();
-    Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);
+    try
+    {
+        QDesktopWidget desktop;
+        QSize screenSize = desktop.geometry().size();
+        Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);
+    }
+    catch (Exception& exception)
+    {}
 }
 
 MainWindow::~MainWindow()

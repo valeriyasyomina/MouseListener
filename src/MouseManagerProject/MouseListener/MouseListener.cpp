@@ -2,6 +2,7 @@
 #include "Exception/AllocMemoryException.h"
 #include "Exception/ServerListenException.h"
 #include "Exception/SocketReadDataException.h"
+#include "Exception/ErrorInputDataException.h"
 #include <QSize>
 #include <new>
 
@@ -38,10 +39,7 @@ MouseListener::~MouseListener()
 void MouseListener::SetScreenSize(const QSize& screenSize)
 {
     if (screenSize.width() <= 0 || screenSize.height() <= 0)
-    {
-        //exception
-
-    }
+        throw ErrorInputDataException("Error screen width or height in SetScreenSize!");
     screenHeight = screenSize.height();
     screenWidth = screenSize.width();
 }
