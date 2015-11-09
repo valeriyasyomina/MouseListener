@@ -3,32 +3,32 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
 
     <item
-        android:id="@+id/action_connect"
-        android:title="@string/action_connect"
+        android:id="@+id/ConnectAction"
+        android:title="@string/ConnectString"
         android:icon="@drawable/connect"
         android:orderInCategory="100"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_disconnect"
-        android:title="@string/action_disconnect"
+        android:id="@+id/DisconnectAction"
+        android:title="@string/DisconnectString"
         android:icon="@drawable/disconnect"
         android:orderInCategory="100"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:id="@+id/SettingsAction"
+        android:title="@string/SettingsString"
         android:icon="@drawable/settings"
         android:orderInCategory="100"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_help"
-        android:title="@string/action_help"
+        android:id="@+id/HelpAction"
+        android:title="@string/HelpString"
         android:icon="@drawable/help"
         android:orderInCategory="100"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_exit"
-        android:title="@string/action_exit"
+        android:id="@+id/ExitAction"
+        android:title="@string/ExitString"
         android:icon="@drawable/exit"
         android:orderInCategory="100"
         app:showAsAction="always" />

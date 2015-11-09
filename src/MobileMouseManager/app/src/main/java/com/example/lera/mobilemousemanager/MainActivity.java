@@ -103,13 +103,13 @@ public class MainActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if (id == R.id.action_exit) {
+        if (id == R.id.ExitAction) {
             CloseAppThread closeAppThread = new CloseAppThread();
             new Thread(closeAppThread).start();
             System.exit(0);
             return true;
         }
-        else if (id == R.id.action_settings) {
+        else if (id == R.id.SettingsAction) {
             if (isConnected) {
                 ShowMessage("Error", "To change setting disconnect first!");
             }
@@ -123,17 +123,17 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         }
-        else  if (id == R.id.action_disconnect) {
+        else  if (id == R.id.DisconnectAction) {
             DisconnectThread disconnectThread = new DisconnectThread();
             new Thread(disconnectThread).start();
             return true;
         }
-        else  if (id == R.id.action_connect) {
+        else  if (id == R.id.ConnectAction) {
             ConnectThread connectThread = new ConnectThread();
             new Thread(connectThread).start();
             return  true;
         }
-        else if (id == R.id.action_help) {
+        else if (id == R.id.HelpAction) {
             if (isConnected) {
                 ShowMessage("Error", "You must disconnect first!");
             }
