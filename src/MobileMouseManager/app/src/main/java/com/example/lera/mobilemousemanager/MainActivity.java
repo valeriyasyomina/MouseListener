@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         editTextPort = (EditText)findViewById(R.id.Port);
 
         buttonClear = (Button)findViewById(R.id.ButtonClear);
-        mainTextInfo = (TextView) findViewById(R.id.InfoText);
+        mainTextInfo = (TextView) findViewById(R.id.ApplicationInfoText);
 
         buttonClear.setOnClickListener(buttonClearClickListener);
 
@@ -117,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
                 buttonClear.setVisibility(View.VISIBLE);
                 editTextAddress.setVisibility(View.VISIBLE);
                 editTextPort.setVisibility(View.VISIBLE);
-                mainTextInfo.setText("Input server IP address and port\n");
+               // mainTextInfo.setText("Input server IP address and port\n");
+                mainTextInfo.setText(R.string.InputInvitation);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
             return true;
@@ -140,10 +141,11 @@ public class MainActivity extends AppCompatActivity {
                 buttonClear.setVisibility(View.INVISIBLE);
                 editTextAddress.setVisibility(View.INVISIBLE);
                 editTextPort.setVisibility(View.INVISIBLE);
-                mainTextInfo.setText("1. Press 'Connect' icon in menu to connect server.\n'" +
+                /*mainTextInfo.setText("1. Press 'Connect' icon in menu to connect server.\n'" +
                         "2. Press 'Settings' icon in menu to change server parameters.\n" +
                         "3. Press 'Disconnect' icon in menu to disconnect from server.\n" +
-                        "4. Press 'Exit' icon in menu to close application.\n");
+                        "4. Press 'Exit' icon in menu to close application.\n");*/
+                mainTextInfo.setText(R.string.HelpInfo);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
             return  true;
@@ -157,10 +159,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 if (isConnected) {
                     ShowMessage("Connection error", "You have already been connected!");
-                }
-                else if (editTextAddress.getText().toString() == "" ||
-                        editTextPort.getText().toString() == "") {
-                    ShowMessage("Connection error", "Input IP address and port!");
                 }
                 else {
                     serverSocket = new Socket(editTextAddress.getText().toString(),
@@ -231,7 +229,8 @@ public class MainActivity extends AppCompatActivity {
                 buttonClear.setVisibility(View.INVISIBLE);
                 editTextAddress.setVisibility(View.INVISIBLE);
                 editTextPort.setVisibility(View.INVISIBLE);
-                mainTextInfo.setText("Mobile mouse application was developed for remote PC mouse control from mobile device.");
+              //  mainTextInfo.setText("Mobile mouse application was developed for remote PC mouse control from mobile device.");
+                mainTextInfo.setText(R.string.ApplicationInfo);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
         });
