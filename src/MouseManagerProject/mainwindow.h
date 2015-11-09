@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QDesktopWidget>
 #include "Singleton/Singleton.h"
 
 namespace Ui {

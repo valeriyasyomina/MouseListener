@@ -9,12 +9,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QDesktopWidget desktop;
+    QSize screenSize = desktop.geometry().size();
+    Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);
 }
 
 MainWindow::~MainWindow()
 {
     try
     {
+
         Singleton::Instance().GetFacade()->GetDeviceManager()->RemoveDeviceModule();
         Singleton::Instance().GetFacade()->GetDeviceManager()->CloseDeviceFile();
     }

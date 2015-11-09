@@ -1,5 +1,8 @@
 #include "MouseListener.h"
 #include "Exception/AllocMemoryException.h"
+#include "Exception/ServerListenException.h"
+#include "Exception/SocketReadDataException.h"
+#include <QSize>
 #include <new>
 
 MouseListener::MouseListener()
@@ -9,6 +12,8 @@ MouseListener::MouseListener()
         server = new QTcpServer(this);
         connect(server, SIGNAL(newConnection()),this, SLOT(onNewConnection()));
         portNumber = 0;
+        screenHeight = DEFAULT_SCREEN_HEIGHT;
+        screenWidth = DEFAULT_SCREEN_WIDTH;
         qDebug()<< "ML ctor";
     }
     catch (std::bad_alloc& exception)
@@ -24,6 +29,21 @@ MouseListener::~MouseListener()
         delete server;
         server = NULL;
     }
+}
+
+///
+/// \brief MouseListener::SetScreenSize Устанавливает размер экрана
+/// \param screenSize Размер экрана
+///
+void MouseListener::SetScreenSize(const QSize& screenSize)
+{
+    if (screenSize.width() <= 0 || screenSize.height() <= 0)
+    {
+        //exception
+
+    }
+    screenHeight = screenSize.height();
+    screenWidth = screenSize.width();
 }
 
 ///
