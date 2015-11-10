@@ -80,15 +80,17 @@ void MainWindow::on_pushButton_clicked()
 {
     try
     {
-        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 10 30");
-        sleep(2);
-        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 50 100");
-        sleep(2);
-        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 100 30");
-        sleep(2);
+        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("7 480 730");
+     //   QCursor::setPos(1440, 900);
+     //   sleep(2);
+       // Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 50 100");
+        //sleep(2);
+        //Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 100 30");
+        //sleep(2);
     }
     catch (Exception& exception)
     {
         QMessageBox::information(this, "send command", exception.GetMessage(), QMessageBox::Ok);
     }
 }
+

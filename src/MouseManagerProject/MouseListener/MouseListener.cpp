@@ -77,12 +77,12 @@ void MouseListener::onNewConnection()
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
-    if(socket->state() == QTcpSocket::ConnectedState)
+   /* if(socket->state() == QTcpSocket::ConnectedState)
     {
         qDebug()<<socket->peerPort();
-    }
-   // char msg[] = "Hello from server";
-    //socket->write(msg, strlen(msg));
+    }*/
+    QString screenSize = QString::number(screenWidth) + " " + QString::number(screenHeight);
+    socket->write(screenSize.toUtf8().data(), strlen(screenSize.toUtf8().data()));
 }
 
 ///
