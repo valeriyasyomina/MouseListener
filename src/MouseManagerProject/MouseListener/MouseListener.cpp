@@ -1,5 +1,9 @@
 #include "MouseListener.h"
 #include "Exception/AllocMemoryException.h"
+#include "Exception/ServerListenException.h"
+#include "Exception/SocketReadDataException.h"
+#include "Exception/ErrorInputDataException.h"
+#include <QSize>
 #include <new>
 
 MouseListener::MouseListener()
@@ -9,6 +13,8 @@ MouseListener::MouseListener()
         server = new QTcpServer(this);
         connect(server, SIGNAL(newConnection()),this, SLOT(onNewConnection()));
         portNumber = 0;
+        screenHeight = DEFAULT_SCREEN_HEIGHT;
+        screenWidth = DEFAULT_SCREEN_WIDTH;
         qDebug()<< "ML ctor";
     }
     catch (std::bad_alloc& exception)
@@ -24,6 +30,18 @@ MouseListener::~MouseListener()
         delete server;
         server = NULL;
     }
+}
+
+///
+/// \brief MouseListener::SetScreenSize Устанавливает размер экрана
+/// \param screenSize Размер экрана
+///
+void MouseListener::SetScreenSize(const QSize& screenSize)
+{
+    if (screenSize.width() <= 0 || screenSize.height() <= 0)
+        throw ErrorInputDataException("Error screen width or height in SetScreenSize!");
+    screenHeight = screenSize.height();
+    screenWidth = screenSize.width();
 }
 
 ///
@@ -59,12 +77,12 @@ void MouseListener::onNewConnection()
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
-    if(socket->state() == QTcpSocket::ConnectedState)
+   /* if(socket->state() == QTcpSocket::ConnectedState)
     {
         qDebug()<<socket->peerPort();
-    }
-   // char msg[] = "Hello from server";
-    //socket->write(msg, strlen(msg));
+    }*/
+    QString screenSize = QString::number(screenWidth) + " " + QString::number(screenHeight);
+    socket->write(screenSize.toUtf8().data(), strlen(screenSize.toUtf8().data()));
 }
 
 ///

@@ -1,15 +1,18 @@
 <resources>
-    <string name="app_name"></string>
-    <string name="default_ip">192.168.0.14</string>
-    <string name="default_port">8000</string>
-    <string name="action_settings">Settings</string>
-    <string name="action_exit">Exit</string>
-    <string name="action_connect">Connect</string>
-    <string name="action_disconnect">Disconnect</string>
-    <string name="action_help">Help</string>
-    <string name="TextInfo">Mobile mouse application was developed for remote PC mouse
+    <string name="ApplicationName"></string>
+    <string name="DefaultIP">192.168.0.14</string>
+    <string name="DefaultPort">8000</string>
+    <string name="SettingsString">Settings</string>
+    <string name="ExitString">Exit</string>
+    <string name="ConnectString">Connect</string>
+    <string name="DisconnectString">Disconnect</string>
+    <string name="HelpString">Help</string>
+    <string name="ApplicationInfo">Mobile mouse application was developed for remote PC mouse
     control from mobile device.</string>
-    <string name="title_activity_settings">SettingsActivity</string>
-
-    <string name="hello_world">Hello world!</string>
+    <string name="HelpInfo">1. Press \'Connect\' icon in menu to connect server.\n
+                            2. Press \'Settings\' icon in menu to change server parameters.\n
+                            3. Press \'Disconnect\' icon in menu to disconnect from server.\n
+                            4. Press \'Exit\' icon in menu to close application.\n
+    </string>
+    <string name="InputInvitation">Input server IP address and port</string>
 </resources>

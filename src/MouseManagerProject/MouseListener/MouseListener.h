@@ -4,10 +4,10 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include "Exception/ServerListenException.h"
-#include "Exception/SocketReadDataException.h"
 
 static const int MAX_BUFFER_SIZE = 64;
+static const int DEFAULT_SCREEN_HEIGHT = 600;
+static const int DEFAULT_SCREEN_WIDTH = 800;
 
 class MouseListener: public QObject
 {
@@ -16,12 +16,15 @@ private:
      QTcpServer* server;
      QTcpSocket* socket;
      int portNumber;
+     int screenWidth;
+     int screenHeight;
 public:
     MouseListener();
     ~MouseListener();
 
     void StartListen();
     void SetPortNumber(int port);
+    void SetScreenSize(const QSize& screenSize);
 public slots:
     void onNewConnection();
     void onReadyRead();

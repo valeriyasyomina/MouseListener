@@ -4,17 +4,17 @@
     android:layout_height="fill_parent">
 
     <TextView
-        android:id="@+id/InfoText"
-        android:text="@string/TextInfo"
+        android:id="@+id/ApplicationInfoText"
+        android:text="@string/ApplicationInfo"
         android:layout_width="300dp"
         android:layout_height="wrap_content" />
     <EditText
         android:id="@+id/Ip_address"
-        android:text="@string/default_ip" android:layout_width="wrap_content"
+        android:text="@string/DefaultIP" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <EditText
         android:id="@+id/Port"
-        android:text="@string/default_port" android:layout_width="wrap_content"
+        android:text="@string/DefaultPort" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <Button
         android:id="@+id/ButtonClear"
