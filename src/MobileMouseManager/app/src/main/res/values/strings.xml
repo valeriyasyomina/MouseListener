@@ -9,10 +9,10 @@
     <string name="HelpString">Help</string>
     <string name="ApplicationInfo">Mobile mouse application was developed for remote PC mouse
     control from mobile device.</string>
-    <string name="HelpInfo">1. Press Connect icon in menu to connect server.
-                            2. Press Settings icon in menu to change server parameters.
-                            3. Press Disconnect icon in menu to disconnect from server.
-                            4. Press Exit icon in menu to close application.
+    <string name="HelpInfo">1. Press \'Connect\' icon in menu to connect server.\n
+                            2. Press \'Settings\' icon in menu to change server parameters.\n
+                            3. Press \'Disconnect\' icon in menu to disconnect from server.\n
+                            4. Press \'Exit\' icon in menu to close application.\n
     </string>
     <string name="InputInvitation">Input server IP address and port</string>
 </resources>

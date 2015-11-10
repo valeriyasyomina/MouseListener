@@ -1,5 +1,6 @@
 package com.example.lera.mobilemousemanager;
 
+import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,8 +17,14 @@ import java.io.DataInputStream;
 import android.view.Display;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int BUFFER_SIZE = 32;
+    private static final int MOUSE_MOVE = 7;
+    private static final int MOUSE_PRESS = 1;
 
     private EditText editTextAddress, editTextPort;
     private Button  buttonClear;
@@ -25,9 +32,11 @@ public class MainActivity extends AppCompatActivity {
     private Socket serverSocket = null;
     private boolean isConnected = false;
     DataOutputStream dataOutputStream = null;
-    DataInputStream dataInputStream = null;
+  //  DataInputStream dataInputStream = null;
     int screenWidth = 0;
     int screenHeight = 0;
+    double scaleX = 0.0;  // x -> width
+    double scaleY = 0.0;  // y -> height
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,22 +76,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public  boolean onTouchEvent(MotionEvent motionEvent) {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-           /* AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-            dlgAlert.setMessage("This is an alert with no consequence");
-            dlgAlert.setTitle("App Title");
-            dlgAlert.setPositiveButton("OK", null);
-            dlgAlert.setCancelable(true);
-            dlgAlert.create().show();*/
+            if (isConnected) {
+                try {
+                    String mouseCommand = Integer.toString(MOUSE_PRESS) + " " + Integer.toString((int) (motionEvent.getX() * scaleX)) +
+                            " " + Integer.toString((int) (motionEvent.getY() * scaleY));
+                    mainTextInfo.setText(mouseCommand);
+                    dataOutputStream.writeBytes(mouseCommand);
+                }
+                catch (Exception exception) {
+                    ShowMessage("Error send mouse coordinates", exception.getMessage());
+                }
+            }
         }
         else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
             if (isConnected) {
                 try {
-                    String mouseCommand = "0 " + Integer.toString((int)motionEvent.getX()) + " " +
-                            Integer.toString((int)motionEvent.getY());
-                 //   byte[] byteArray = mouseCommand.getBytes();
+                    String mouseCommand = Integer.toString(MOUSE_MOVE) + " " + Integer.toString((int) (motionEvent.getX() * scaleX)) +
+                            " " + Integer.toString((int) (motionEvent.getY() * scaleY));
                     mainTextInfo.setText(mouseCommand);
                     dataOutputStream.writeBytes(mouseCommand);
-                 //   dataInputStream.readUTF();
                 }
                 catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
@@ -91,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -138,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
                 ShowMessage("Error", "You must disconnect first!");
             }
             else {
+                ShowMessage("Error", Integer.toString(screenHeight) + " " + Integer.toString(screenWidth)); ///
+
                 buttonClear.setVisibility(View.INVISIBLE);
                 editTextAddress.setVisibility(View.INVISIBLE);
                 editTextPort.setVisibility(View.INVISIBLE);
@@ -163,8 +178,22 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     serverSocket = new Socket(editTextAddress.getText().toString(),
                             Integer.parseInt(editTextPort.getText().toString()));
+
+                    BufferedReader inputStream = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+
+                   // dataInputStream = new DataInputStream(serverSocket.getInputStream());
+
+                    //String PCScreenSize = dataInputStream.readUTF();
+                    char[] buffer = new char[BUFFER_SIZE];
+                    inputStream.read(buffer, 0, BUFFER_SIZE);
                     dataOutputStream = new DataOutputStream(serverSocket.getOutputStream());
-                    dataInputStream = new DataInputStream(serverSocket.getInputStream());
+
+                    String PCScreenSize = String.valueOf(buffer);
+
+                    String[] screenSize = PCScreenSize.split(" ");
+                    scaleX = (double) Double.parseDouble(screenSize[0]) / screenWidth;
+                    scaleY = (double) Double.parseDouble(screenSize[1]) / screenHeight;
+                    ShowMessage("Connection ok", PCScreenSize);
                     ShowMessage("Connection ok", "Connection successfully established!");
                     HideAllComponents();
                     isConnected = true;

@@ -128,9 +128,9 @@ static int __init display_init(void)
   координаты связанные с предыдущими*/
     /* Announce that the virtual mouse will generate
        relative coordinates */
-   /* set_bit(EV_REL, vms_input_dev->evbit);
-    set_bit(REL_X, vms_input_dev->relbit);
-    set_bit(REL_Y, vms_input_dev->relbit);*/
+   /* set_bit(EV_REL, vms_input_dev->evbit);*/
+ //   set_bit(ABS_X, vms_input_dev->absbit);
+   // set_bit(ABS_Y, vms_input_dev->absbit);
 
     vms_input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS); //| BIT_MASK(EV_REL);
     vms_input_dev->keybit[BIT_WORD(BTN_MOUSE)] = BIT_MASK(BTN_LEFT) | BIT_MASK(BTN_RIGHT) | BIT_MASK(BTN_MIDDLE);
@@ -139,8 +139,8 @@ static int __init display_init(void)
   //  vms_input_dev->relbit[0] |= BIT_MASK(REL_WHEEL);
     vms_input_dev->absbit[0] = BIT_MASK(ABS_X) | BIT_MASK(ABS_Y);
 
-    input_set_abs_params(vms_input_dev, ABS_X, 0, 2000, 0, 0);
-    input_set_abs_params(vms_input_dev, ABS_Y, 0, 2000, 0, 0);
+    input_set_abs_params(vms_input_dev, ABS_X, 0, 0, 0, 0);
+    input_set_abs_params(vms_input_dev, ABS_Y, 0, 0, 0, 0);
   
   /* регистрация в подсистеме ввода */
     /* Register with the input subsystem */
