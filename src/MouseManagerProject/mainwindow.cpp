@@ -15,7 +15,10 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         QDesktopWidget desktop;
         QSize screenSize = desktop.geometry().size();
-        Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);        
+        Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);
+
+        connect(Singleton::Instance().GetFacade(),
+                SIGNAL(ServerStartedSignal(QString,int)), this, SLOT(ServerStarted(QString,int)));
     }
     catch (Exception& exception)
     {}
@@ -58,7 +61,6 @@ void MainWindow::on_actionStart_mouse_listening_triggered()
         ui->actionLoad_device_module->setEnabled(false);
         ui->actionStart_mouse_listening->setEnabled(false);
         ui->actionStop_mouse_listening->setEnabled(true);
-        QMessageBox::information(this, "Start listen", "Server was successfully started!", QMessageBox::Ok);
     }
     catch (Exception& exception)
     {
@@ -78,19 +80,6 @@ void MainWindow::on_actionLoad_device_module_triggered()
     catch (Exception& exception)
     {
         QMessageBox::information(this, "Insert module", exception.GetMessage(), QMessageBox::Ok);
-    }
-}
-
-void MainWindow::on_pushButton_clicked()
-{
-    try
-    {
-        Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("7 480 730");
-
-    }
-    catch (Exception& exception)
-    {
-        QMessageBox::information(this, "send command", exception.GetMessage(), QMessageBox::Ok);
     }
 }
 
@@ -118,4 +107,10 @@ void MainWindow::on_actionStop_mouse_listening_triggered()
     ui->actionRemove_device_module->setEnabled(true);
     ui->actionStart_mouse_listening->setEnabled(true);
     ui->actionStop_mouse_listening->setEnabled(false);
+}
+
+void MainWindow::ServerStarted(QString serverAddress, int serverPort)
+{
+    QMessageBox::information(this, "Start listen", "Server was successfully started on " + serverAddress +
+                             QString(":") + QString::number(serverPort), QMessageBox::Ok);
 }

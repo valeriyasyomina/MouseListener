@@ -36,6 +36,7 @@ public slots:
     void DeviceKernelModuleRemoved();
 signals:
     void MessageReceived(const char* message);
+    void ServerStartedSignal(QString serverAddress, int serverPort);
 };
 
 #endif // MOUSELISTENER_H
