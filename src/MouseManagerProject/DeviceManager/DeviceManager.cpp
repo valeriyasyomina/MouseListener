@@ -30,9 +30,9 @@ void DeviceManager::SendCommandToDevice(const char* command)
 {
     qDebug()<< "In device manager";
     qDebug()<< command;
-    write(deviceFileDescriptor, command, strlen(command));
-  /*  if (commandSendRes < 0)
-        throw SendDeviceCommandException("Error send command to device!");*/
+    int commandSendRes = write(deviceFileDescriptor, command, strlen(command));
+    if (commandSendRes < 0)
+        emit ErrorSendCommandToDevice();
 }
 ///
 /// \brief InsertDeviceModule  Вгружает загружаемый модуль устройства в ядро
