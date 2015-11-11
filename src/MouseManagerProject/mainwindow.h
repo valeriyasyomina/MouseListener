@@ -32,6 +32,8 @@ private slots:
 
     void on_actionAbout_triggered();
 
+    void on_actionStop_mouse_listening_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -15,6 +15,7 @@ MouseListener::MouseListener()
         portNumber = 0;
         screenHeight = DEFAULT_SCREEN_HEIGHT;
         screenWidth = DEFAULT_SCREEN_WIDTH;
+        deviceKernelModuleLoaded = false;
         qDebug()<< "ML ctor";
     }
     catch (std::bad_alloc& exception)
@@ -51,10 +52,20 @@ void MouseListener::StartListen()
 {
     if (!server->isListening())
     {
+        if (!deviceKernelModuleLoaded)
+            throw ServerListenException("You must load kernel module before start listening!");
         if (!server->listen(QHostAddress::Any, portNumber))
-            throw ServerListenException("Error server start listen!");
+            throw ServerListenException("Error server start listening!");
         qDebug()<< "Started";
     }
+}
+
+///
+/// \brief MouseListener::StopListen Останавливает прослушивать по заданному ранее адресу
+///
+void MouseListener::StopListen()
+{
+    server->close();
 }
 
 ///
@@ -112,4 +123,20 @@ void MouseListener::onDisconnected()
     disconnect(socket, SIGNAL(disconnected()));
     disconnect(socket, SIGNAL(readyRead()));
     socket->deleteLater();
+}
+
+///
+/// \brief MouseListener::DeviceKernelModuleInserted Вызывается, когда пользователь загружает модуль ядра
+///
+void MouseListener::DeviceKernelModuleInserted()
+{
+    deviceKernelModuleLoaded = true;
+}
+
+///
+/// \brief MouseListener::DeviceKernelModuleRemoved Вызывается, когда пользователь выгружает модуль ядра
+///
+void MouseListener::DeviceKernelModuleRemoved()
+{
+    deviceKernelModuleLoaded = false;
 }

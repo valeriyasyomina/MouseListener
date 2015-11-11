@@ -30,9 +30,9 @@ void DeviceManager::SendCommandToDevice(const char* command)
 {
     qDebug()<< "In device manager";
     qDebug()<< command;
-    int commandSendRes = write(deviceFileDescriptor, command, strlen(command));
-    if (commandSendRes < 0)
-        throw SendDeviceCommandException("Error send command to device!");
+    write(deviceFileDescriptor, command, strlen(command));
+  /*  if (commandSendRes < 0)
+        throw SendDeviceCommandException("Error send command to device!");*/
 }
 ///
 /// \brief InsertDeviceModule  Вгружает загружаемый модуль устройства в ядро
@@ -53,6 +53,8 @@ void DeviceManager::InsertDeviceModule(const std::string& modulePath)
         int returnValue = system(command.c_str());
         if (returnValue == -1 || WEXITSTATUS(returnValue) != 0)
             throw ShellCommandExecuteException("Kernel module has already been loaded!");
+
+        emit KernelModuleInserted();
     }
     catch (std::bad_alloc& exception)
     {
@@ -69,6 +71,7 @@ void DeviceManager::RemoveDeviceModule()
     int returnValue = system(command.c_str());
     if (returnValue == -1 || WEXITSTATUS(returnValue) != 0)
         throw ShellCommandExecuteException("Kernel module was already removed or not loaded yet");
+    emit KernelModuleRemoved();
 }
 
 ///

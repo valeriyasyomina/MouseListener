@@ -35,6 +35,9 @@ public slots:
     void SendCommandToDevice(const char* command);
 private:
     void GetModuleNameFromPath(const std::string& modulePath);
+signals:
+    void KernelModuleInserted();
+    void KernelModuleRemoved();
 };
 
 #endif // DEVICEMANAGER_H
