@@ -11,11 +11,8 @@
 #include "Exception/NullInputDataException.h"
 #include "Exception/ErrorInputDataException.h"
 #include <Exception/FileException.h>
-#include <Exception/SendDeviceCommandException.h>
 #include <iostream>
 #include <fstream>
-
-
 
 class DeviceManager : public QObject
 {
@@ -38,6 +35,7 @@ private:
 signals:
     void KernelModuleInserted();
     void KernelModuleRemoved();
+    void ErrorSendCommandToDevice();
 };
 
 #endif // DEVICEMANAGER_H

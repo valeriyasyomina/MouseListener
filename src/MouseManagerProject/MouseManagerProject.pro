@@ -24,7 +24,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     DeviceManager/DeviceManager.h \
     Exception/Exception.h \
-    Exception/SendDeviceCommandException.h \
     MouseListener/MouseListener.h \
     Singleton/Singleton.h \
     Facade/Facade.h \
