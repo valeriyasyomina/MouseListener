@@ -18,17 +18,22 @@ private:
      int portNumber;
      int screenWidth;
      int screenHeight;
+     bool deviceKernelModuleLoaded;
 public:
     MouseListener();
     ~MouseListener();
 
     void StartListen();
+    void StopListen();
     void SetPortNumber(int port);
     void SetScreenSize(const QSize& screenSize);
 public slots:
     void onNewConnection();
     void onReadyRead();
     void onDisconnected();
+
+    void DeviceKernelModuleInserted();
+    void DeviceKernelModuleRemoved();
 signals:
     void MessageReceived(const char* message);
 };

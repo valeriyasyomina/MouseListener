@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->actionStop_mouse_listening->setEnabled(false);
 
     try
     {
@@ -53,6 +54,10 @@ void MainWindow::on_actionStart_mouse_listening_triggered()
     {
         Singleton::Instance().GetFacade()->GetMouseListener()->SetPortNumber(portNumber);
         Singleton::Instance().GetFacade()->GetMouseListener()->StartListen();
+        ui->actionRemove_device_module->setEnabled(false);
+        ui->actionLoad_device_module->setEnabled(false);
+        ui->actionStart_mouse_listening->setEnabled(false);
+        ui->actionStop_mouse_listening->setEnabled(true);
         QMessageBox::information(this, "Start listen", "Server was successfully started!", QMessageBox::Ok);
     }
     catch (Exception& exception)
@@ -81,12 +86,7 @@ void MainWindow::on_pushButton_clicked()
     try
     {
         Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("7 480 730");
-     //   QCursor::setPos(1440, 900);
-     //   sleep(2);
-       // Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 50 100");
-        //sleep(2);
-        //Singleton::Instance().GetFacade()->GetDeviceManager()->SendCommandToDevice("0 100 30");
-        //sleep(2);
+
     }
     catch (Exception& exception)
     {
@@ -109,3 +109,13 @@ void MainWindow::on_actionAbout_triggered()
                              QString("Mobile device connected to server can control PC mouse movement and left button press\n"),
                              QMessageBox::Ok);}
 
+
+void MainWindow::on_actionStop_mouse_listening_triggered()
+{
+    Singleton::Instance().GetFacade()->GetMouseListener()->StopListen();
+    QMessageBox::information(this, "Stop listen", "Server was successfully stopped!", QMessageBox::Ok);
+    ui->actionLoad_device_module->setEnabled(true);
+    ui->actionRemove_device_module->setEnabled(true);
+    ui->actionStart_mouse_listening->setEnabled(true);
+    ui->actionStop_mouse_listening->setEnabled(false);
+}
