@@ -19,8 +19,12 @@ public:
     DeviceManager* GetDeviceManager() {return deviceManager;}
 public slots:
     void ServerStarted(QString serverAddress, int serverPort) {emit ServerStartedSignal(serverAddress, serverPort);}
+    void ServerStopped() {emit ServerStoppedSignal();}
+    void ErrorSendCommandToDevice() {emit ErrorSendCommandToDeviceSignal();}
 signals:
     void ServerStartedSignal(QString serverAddress, int serverPort);
+    void ServerStoppedSignal();
+    void ErrorSendCommandToDeviceSignal();
 };
 
 #endif // FACADE_H

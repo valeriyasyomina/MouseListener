@@ -35,9 +35,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
 public slots:
     void ServerStarted(QString serverAddress, int serverPort);
+    void ServerStopped();
+    void ErrorSendCommandToDevice();
 };
 
 #endif // MAINWINDOW_H

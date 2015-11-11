@@ -33,9 +33,9 @@ public slots:
 private:
     void GetModuleNameFromPath(const std::string& modulePath);
 signals:
-    void KernelModuleInserted();
-    void KernelModuleRemoved();
-    void ErrorSendCommandToDevice();
+    void KernelModuleInsertedSignal();
+    void KernelModuleRemovedSignal();
+    void ErrorSendCommandToDeviceSignal();
 };
 
 #endif // DEVICEMANAGER_H
