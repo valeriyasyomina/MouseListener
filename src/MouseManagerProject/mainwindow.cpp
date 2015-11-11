@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         QDesktopWidget desktop;
         QSize screenSize = desktop.geometry().size();
-        Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);
+        Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);        
     }
     catch (Exception& exception)
     {}
@@ -93,4 +93,19 @@ void MainWindow::on_pushButton_clicked()
         QMessageBox::information(this, "send command", exception.GetMessage(), QMessageBox::Ok);
     }
 }
+
+
+void MainWindow::on_actionHelp_triggered()
+{
+    QMessageBox::information(this, "Help", QString("1. To load device kernel module choose File->load device kernal module ") +
+                             QString("and than choose your module *.ko\n") +
+                             QString("2. To remove device module from kernel choose File->remove device kernal module\n") +
+                             QString("3. To run server choose File->start mouse listening\n"), QMessageBox::Ok);
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::information(this, "About program", QString("This program represents a server for mobile device.\n") +
+                             QString("Mobile device connected to server can control PC mouse movement and left button press\n"),
+                             QMessageBox::Ok);}
 
