@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->actionStop_mouse_listening->setEnabled(false);
-
+    ui->lblServerInfo->setText("");
     try
     {
         QDesktopWidget desktop;
@@ -19,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
         connect(Singleton::Instance().GetFacade(),
                 SIGNAL(ServerStartedSignal(QString,int)), this, SLOT(ServerStarted(QString,int)));
+        connect(Singleton::Instance().GetFacade(),
+                SIGNAL(ServerStoppedSignal()), this, SLOT(ServerStopped()));
+        connect(Singleton::Instance().GetFacade(),
+                SIGNAL(ErrorSendCommandToDeviceSignal()), this, SLOT(ErrorSendCommandToDevice()));
     }
     catch (Exception& exception)
     {}
@@ -28,7 +32,6 @@ MainWindow::~MainWindow()
 {
     try
     {
-
         Singleton::Instance().GetFacade()->GetDeviceManager()->RemoveDeviceModule();
         Singleton::Instance().GetFacade()->GetDeviceManager()->CloseDeviceFile();
     }
@@ -86,10 +89,11 @@ void MainWindow::on_actionLoad_device_module_triggered()
 
 void MainWindow::on_actionHelp_triggered()
 {
-    QMessageBox::information(this, "Help", QString("1. To load device kernel module choose File->load device kernal module ") +
+    QMessageBox::information(this, "Help", QString("1. To load device kernel module choose Service->Load device kernal module ") +
                              QString("and than choose your module *.ko\n") +
-                             QString("2. To remove device module from kernel choose File->remove device kernal module\n") +
-                             QString("3. To run server choose File->start mouse listening\n"), QMessageBox::Ok);
+                             QString("2. To remove device module from kernel choose Service->Remove device kernal module\n") +
+                             QString("3. To run server choose Service->Start mouse listening\n") +
+                             QString("4. To stop server choose Service->Stop mouse listening\n"), QMessageBox::Ok);
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -101,8 +105,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionStop_mouse_listening_triggered()
 {
-    Singleton::Instance().GetFacade()->GetMouseListener()->StopListen();
-    QMessageBox::information(this, "Stop listen", "Server was successfully stopped!", QMessageBox::Ok);
+    Singleton::Instance().GetFacade()->GetMouseListener()->StopListen();    
     ui->actionLoad_device_module->setEnabled(true);
     ui->actionRemove_device_module->setEnabled(true);
     ui->actionStart_mouse_listening->setEnabled(true);
@@ -111,6 +114,17 @@ void MainWindow::on_actionStop_mouse_listening_triggered()
 
 void MainWindow::ServerStarted(QString serverAddress, int serverPort)
 {
-    QMessageBox::information(this, "Start listen", "Server was successfully started on " + serverAddress +
-                             QString(":") + QString::number(serverPort), QMessageBox::Ok);
+    QString message = "Server was successfully started on " + serverAddress + QString(":") + QString::number(serverPort);
+    QMessageBox::information(this, "Start listen", message, QMessageBox::Ok);
+    ui->lblServerInfo->setText(message);
+}
+void MainWindow::ServerStopped()
+{
+    QMessageBox::information(this, "Stop listen", "Server was successfully stopped!", QMessageBox::Ok);
+    ui->lblServerInfo->setText("Server stopped");
+}
+void MainWindow::ErrorSendCommandToDevice()
+{
+    QMessageBox::information(this, "Error send command to device",
+                             "Maybe kernel module was not loaded! Try to do it", QMessageBox::Ok);
 }

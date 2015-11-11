@@ -32,8 +32,9 @@ void DeviceManager::SendCommandToDevice(const char* command)
     qDebug()<< command;
     int commandSendRes = write(deviceFileDescriptor, command, strlen(command));
     if (commandSendRes < 0)
-        emit ErrorSendCommandToDevice();
+        emit ErrorSendCommandToDeviceSignal();
 }
+
 ///
 /// \brief InsertDeviceModule  Вгружает загружаемый модуль устройства в ядро
 /// \param modulePath   Путь к загружаемому модулю
@@ -54,7 +55,7 @@ void DeviceManager::InsertDeviceModule(const std::string& modulePath)
         if (returnValue == -1 || WEXITSTATUS(returnValue) != 0)
             throw ShellCommandExecuteException("Kernel module has already been loaded!");
 
-        emit KernelModuleInserted();
+        emit KernelModuleInsertedSignal();
     }
     catch (std::bad_alloc& exception)
     {
@@ -71,7 +72,7 @@ void DeviceManager::RemoveDeviceModule()
     int returnValue = system(command.c_str());
     if (returnValue == -1 || WEXITSTATUS(returnValue) != 0)
         throw ShellCommandExecuteException("Kernel module was already removed or not loaded yet");
-    emit KernelModuleRemoved();
+    emit KernelModuleRemovedSignal();
 }
 
 ///
