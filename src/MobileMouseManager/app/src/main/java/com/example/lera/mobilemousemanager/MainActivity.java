@@ -1,6 +1,6 @@
 package com.example.lera.mobilemousemanager;
 
-import android.content.res.Configuration;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.app.AlertDialog;
 import android.widget.TextView;
 import java.io.DataOutputStream;
-import java.io.DataInputStream;
 import android.view.Display;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -32,11 +31,10 @@ public class MainActivity extends AppCompatActivity {
     private Socket serverSocket = null;
     private boolean isConnected = false;
     DataOutputStream dataOutputStream = null;
-  //  DataInputStream dataInputStream = null;
     int screenWidth = 0;
     int screenHeight = 0;
-    double scaleX = 0.0;  // x -> width
-    double scaleY = 0.0;  // y -> height
+    double scaleX = 0.0;
+    double scaleY = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
+                    DisconnectThread disconnectThread = new DisconnectThread();
+                    new Thread(disconnectThread).start();
                 }
             }
         }
@@ -98,15 +98,36 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
+                    DisconnectThread disconnectThread = new DisconnectThread();
+                    new Thread(disconnectThread).start();
                 }
             }
         }
         return true;
     }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+       /* outState.putBoolean("isConnected", isConnected);
+        outState.putString("mainTextInfo", mainTextInfo.getText().toString());
+        outState.putDouble("scaleX", scaleX);
+        outState.putDouble("scaleY", scaleY);
+        outState.putParcelable("serverSocket", (Parcelable) serverSocket);
+        outState.putParcelable("dataOutputStream", (Parcelable) dataOutputStream);*/
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+       /* isConnected = savedInstanceState.getBoolean("isConnected");
+        mainTextInfo.setText(savedInstanceState.getString("mainTextInfo"));
+        scaleX = savedInstanceState.getDouble("scaleX");
+        scaleY = savedInstanceState.getDouble("scaleY");
+       // serverSocket = (Socket) savedInstanceState.getParcelable("serverSocket");
+        //dataOutputStream = (DataOutputStream) savedInstanceState.getParcelable("dataOutputStream");*/
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -130,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
                 buttonClear.setVisibility(View.VISIBLE);
                 editTextAddress.setVisibility(View.VISIBLE);
                 editTextPort.setVisibility(View.VISIBLE);
-               // mainTextInfo.setText("Input server IP address and port\n");
                 mainTextInfo.setText(R.string.InputInvitation);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
@@ -151,15 +171,9 @@ public class MainActivity extends AppCompatActivity {
                 ShowMessage("Error", "You must disconnect first!");
             }
             else {
-                ShowMessage("Error", Integer.toString(screenHeight) + " " + Integer.toString(screenWidth)); ///
-
                 buttonClear.setVisibility(View.INVISIBLE);
                 editTextAddress.setVisibility(View.INVISIBLE);
                 editTextPort.setVisibility(View.INVISIBLE);
-                /*mainTextInfo.setText("1. Press 'Connect' icon in menu to connect server.\n'" +
-                        "2. Press 'Settings' icon in menu to change server parameters.\n" +
-                        "3. Press 'Disconnect' icon in menu to disconnect from server.\n" +
-                        "4. Press 'Exit' icon in menu to close application.\n");*/
                 mainTextInfo.setText(R.string.HelpInfo);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
@@ -181,9 +195,6 @@ public class MainActivity extends AppCompatActivity {
 
                     BufferedReader inputStream = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
 
-                   // dataInputStream = new DataInputStream(serverSocket.getInputStream());
-
-                    //String PCScreenSize = dataInputStream.readUTF();
                     char[] buffer = new char[BUFFER_SIZE];
                     inputStream.read(buffer, 0, BUFFER_SIZE);
                     dataOutputStream = new DataOutputStream(serverSocket.getOutputStream());
@@ -193,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
                     String[] screenSize = PCScreenSize.split(" ");
                     scaleX = (double) Double.parseDouble(screenSize[0]) / screenWidth;
                     scaleY = (double) Double.parseDouble(screenSize[1]) / screenHeight;
-                    ShowMessage("Connection ok", PCScreenSize);
                     ShowMessage("Connection ok", "Connection successfully established!");
                     HideAllComponents();
                     isConnected = true;
@@ -258,7 +268,6 @@ public class MainActivity extends AppCompatActivity {
                 buttonClear.setVisibility(View.INVISIBLE);
                 editTextAddress.setVisibility(View.INVISIBLE);
                 editTextPort.setVisibility(View.INVISIBLE);
-              //  mainTextInfo.setText("Mobile mouse application was developed for remote PC mouse control from mobile device.");
                 mainTextInfo.setText(R.string.ApplicationInfo);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
