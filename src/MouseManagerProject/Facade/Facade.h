@@ -17,6 +17,10 @@ public:
 
     MouseListener* GetMouseListener() {return mouseListener;}
     DeviceManager* GetDeviceManager() {return deviceManager;}
+public slots:
+    void ServerStarted(QString serverAddress, int serverPort) {emit ServerStartedSignal(serverAddress, serverPort);}
+signals:
+    void ServerStartedSignal(QString serverAddress, int serverPort);
 };
 
 #endif // FACADE_H

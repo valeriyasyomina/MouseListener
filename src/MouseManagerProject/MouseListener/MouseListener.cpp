@@ -56,6 +56,8 @@ void MouseListener::StartListen()
             throw ServerListenException("You must load kernel module before start listening!");
         if (!server->listen(QHostAddress::Any, portNumber))
             throw ServerListenException("Error server start listening!");
+
+        emit ServerStartedSignal(server->serverAddress().toString(), server->serverPort());
         qDebug()<< "Started";
     }
 }

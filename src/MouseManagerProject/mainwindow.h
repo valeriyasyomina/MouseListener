@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QDesktopWidget>
+#include <QObject>
 #include "Singleton/Singleton.h"
 
 namespace Ui {
@@ -24,9 +25,7 @@ private slots:
 
     void on_actionStart_mouse_listening_triggered();
 
-    void on_actionLoad_device_module_triggered();
-
-    void on_pushButton_clicked();   
+    void on_actionLoad_device_module_triggered();  
 
     void on_actionHelp_triggered();
 
@@ -36,6 +35,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+public slots:
+    void ServerStarted(QString serverAddress, int serverPort);
 };
 
 #endif // MAINWINDOW_H
