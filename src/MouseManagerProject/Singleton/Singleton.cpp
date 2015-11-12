@@ -5,8 +5,15 @@ Singleton Singleton::instance;
 
 Singleton::Singleton()
 {
-    facade = new Facade();
-    qDebug()<< "Singlon ctor";
+    try
+    {
+        facade = new Facade();
+        qDebug()<< "Singlon ctor";
+    }
+    catch (std::bad_alloc& exception)
+    {
+        throw AllocMemoryException("Error allocate memory in Singleton::Singleton()");
+    }
 }
 
 Singleton::~Singleton()
