@@ -1,4 +1,5 @@
 #include "Singleton.h"
+#include "Exception/AllocMemoryException.h"
 
 Singleton Singleton::instance;
 
@@ -19,9 +20,16 @@ Singleton::~Singleton()
 
 Facade* Singleton::GetFacade()
 {
-    if (!facade)
-        facade = new Facade();
-    return facade;
+    try
+    {
+        if (!facade)
+            facade = new Facade();
+        return facade;
+    }
+    catch (std::bad_alloc& exception)
+    {
+        throw AllocMemoryException("Error allocate memory in Singleton::GetFacade()");
+    }
 }
 
 
