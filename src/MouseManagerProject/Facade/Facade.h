@@ -21,10 +21,14 @@ public slots:
     void ServerStarted(QString serverAddress, int serverPort) {emit ServerStartedSignal(serverAddress, serverPort);}
     void ServerStopped() {emit ServerStoppedSignal();}
     void ErrorSendCommandToDevice() {emit ErrorSendCommandToDeviceSignal();}
+    void ClientConnected(QString clientAddress, int clientPort) {emit ClientConnectedSignal(clientAddress, clientPort);}
+    void ClientDisconnected(QString clientAddress, int clientPort) {emit ClientDisconnectedSignal(clientAddress, clientPort);}
 signals:
     void ServerStartedSignal(QString serverAddress, int serverPort);
     void ServerStoppedSignal();
     void ErrorSendCommandToDeviceSignal();
+    void ClientConnectedSignal(QString clientAddress, int clientPort);
+    void ClientDisconnectedSignal(QString clientAddress, int clientPort);
 };
 
 #endif // FACADE_H
