@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->actionStop_mouse_listening->setEnabled(false);
     ui->lblServerInfo->setText("");
+    ui->lblClientsInfo->setText("");
     try
     {
         QDesktopWidget desktop;
@@ -23,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
                 SIGNAL(ServerStoppedSignal()), this, SLOT(ServerStopped()));
         connect(Singleton::Instance().GetFacade(),
                 SIGNAL(ErrorSendCommandToDeviceSignal()), this, SLOT(ErrorSendCommandToDevice()));
+        connect(Singleton::Instance().GetFacade(),
+                SIGNAL(ClientConnectedSignal(QString,int)), this, SLOT(ClientConnected(QString,int)));
+        connect(Singleton::Instance().GetFacade(),
+                SIGNAL(ClientDisconnectedSignal(QString,int)), this, SLOT(ClientDisconnected(QString,int)));
     }
     catch (Exception& exception)
     {}
@@ -127,4 +132,14 @@ void MainWindow::ErrorSendCommandToDevice()
 {
     QMessageBox::information(this, "Error send command to device",
                              "Maybe kernel module was not loaded! Try to do it", QMessageBox::Ok);
+}
+
+void MainWindow::ClientConnected(QString clientAddress, int clientPort)
+{
+
+}
+
+void MainWindow::ClientDisconnected(QString clientAddress, int clientPort)
+{
+
 }

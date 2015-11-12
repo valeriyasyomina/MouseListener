@@ -39,6 +39,8 @@ public slots:
     void ServerStarted(QString serverAddress, int serverPort);
     void ServerStopped();
     void ErrorSendCommandToDevice();
+    void ClientConnected(QString clientAddress, int clientPort);
+    void ClientDisconnected(QString clientAddress, int clientPort);
 };
 
 #endif // MAINWINDOW_H
