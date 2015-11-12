@@ -136,10 +136,14 @@ void MainWindow::ErrorSendCommandToDevice()
 
 void MainWindow::ClientConnected(QString clientAddress, int clientPort)
 {
-
+    ui->lblClientsInfo->setText(ui->lblClientsInfo->text() +
+                                QString("Client ") + clientAddress + QString(":") +
+                                QString::number(clientPort) + QString(" connected\n"));
 }
 
 void MainWindow::ClientDisconnected(QString clientAddress, int clientPort)
 {
-
+    ui->lblClientsInfo->setText(ui->lblClientsInfo->text() +
+                                QString("Client ") + clientAddress + QString(":") +
+                                QString::number(clientPort) + QString(" disconnected\n"));
 }
