@@ -38,6 +38,8 @@ signals:
     void MessageReceivedSignal(const char* message);
     void ServerStartedSignal(QString serverAddress, int serverPort);
     void ServerStoppedSignal();
+    void ClientConnectedSignal(QString clientAddress, int clientPort);
+    void ClientDisconnectedSignal(QString clientAddress, int clientPort);
 };
 
 #endif // MOUSELISTENER_H

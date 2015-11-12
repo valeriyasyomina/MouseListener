@@ -97,6 +97,8 @@ void MouseListener::onNewConnection()
     }*/
     QString screenSize = QString::number(screenWidth) + " " + QString::number(screenHeight);
     socket->write(screenSize.toUtf8().data(), strlen(screenSize.toUtf8().data()));
+
+    emit ClientConnectedSignal(socket->peerAddress().toString(), socket->peerPort());
 }
 
 ///
@@ -125,7 +127,8 @@ void MouseListener::onDisconnected()
     qDebug()<< "disconnct";
     disconnect(socket, SIGNAL(disconnected()));
     disconnect(socket, SIGNAL(readyRead()));
-    socket->deleteLater();
+    emit ClientDisconnectedSignal(socket->peerAddress().toString(), socket->peerPort());
+    socket->deleteLater();    
 }
 
 ///
