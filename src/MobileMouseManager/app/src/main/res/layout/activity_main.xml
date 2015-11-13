@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -6,21 +6,43 @@
     <TextView
         android:id="@+id/ApplicationInfoText"
         android:text="@string/ApplicationInfo"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <EditText
         android:id="@+id/Ip_address"
         android:text="@string/DefaultIP" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ApplicationInfoText"/>
     <EditText
         android:id="@+id/Port"
         android:text="@string/DefaultPort" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Ip_address"/>
     <Button
         android:id="@+id/ButtonClear"
         android:text="Clear"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Port"/>
 
+    <LinearLayout
+        android:id="@+id/MouseButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/new_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="New" />
+        <Button
+            android:id="@+id/suggest_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Suggest" />
+    </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

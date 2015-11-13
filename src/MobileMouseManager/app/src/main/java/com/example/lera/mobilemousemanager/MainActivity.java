@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         editTextPort = (EditText)findViewById(R.id.Port);
 
         buttonClear = (Button)findViewById(R.id.ButtonClear);
+
         mainTextInfo = (TextView) findViewById(R.id.ApplicationInfoText);
 
         buttonClear.setOnClickListener(buttonClearClickListener);
@@ -89,19 +90,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-            if (isConnected) {
+          //  if (isConnected) {
                 try {
-                    String mouseCommand = Integer.toString(MOUSE_MOVE) + " " + Integer.toString((int) (motionEvent.getX() * scaleX)) +
-                            " " + Integer.toString((int) (motionEvent.getY() * scaleY));
+                   /* String mouseCommand = Integer.toString(MOUSE_MOVE) + " " + Integer.toString((int) (motionEvent.getX() * scaleX)) +
+                            " " + Integer.toString((int) (motionEvent.getY() * scaleY));*/
+                    String mouseCommand = Integer.toString(MOUSE_MOVE) + " " + Integer.toString((int) motionEvent.getX()) +
+                            " " + Integer.toString((int)motionEvent.getY());
                     mainTextInfo.setText(mouseCommand);
-                    dataOutputStream.writeBytes(mouseCommand);
+                   // dataOutputStream.writeBytes(mouseCommand);
                 }
                 catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
                     DisconnectThread disconnectThread = new DisconnectThread();
                     new Thread(disconnectThread).start();
                 }
-            }
+           // }
         }
         return true;
     }
