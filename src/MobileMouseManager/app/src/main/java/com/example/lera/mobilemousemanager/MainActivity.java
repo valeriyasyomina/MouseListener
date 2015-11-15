@@ -1,6 +1,4 @@
 package com.example.lera.mobilemousemanager;
-
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -23,18 +21,19 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int BUFFER_SIZE = 32;
     private static final int MOUSE_MOVE = 7;
-    private static final int MOUSE_PRESS = 1;
+    private static final int MOUSE_LEFT_BUTTON_PRESS = 1;
+    private static final int MOUSE_RIGHT_BUTTON_PRESS = 2;
 
     private EditText editTextAddress, editTextPort;
-    private Button  buttonClear;
+    private Button  buttonClear, leftMouseButton, rightMouseButton;
     private TextView mainTextInfo = null;
     private Socket serverSocket = null;
     private boolean isConnected = false;
     DataOutputStream dataOutputStream = null;
-    int screenWidth = 0;
-    int screenHeight = 0;
-    double scaleX = 0.0;
-    double scaleY = 0.0;
+
+    int screenWidth = 0, screenHeight = 0;
+    double scaleX = 0.0, scaleY = 0.0;
+    int mouseX = 0, mouseY = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +44,19 @@ public class MainActivity extends AppCompatActivity {
         editTextPort = (EditText)findViewById(R.id.Port);
 
         buttonClear = (Button)findViewById(R.id.ButtonClear);
+        leftMouseButton = (Button) findViewById(R.id.LeftMouseButton);
+        rightMouseButton = (Button) findViewById(R.id.RightMouseButton);
 
         mainTextInfo = (TextView) findViewById(R.id.ApplicationInfoText);
 
         buttonClear.setOnClickListener(buttonClearClickListener);
+        leftMouseButton.setOnClickListener(leftMouseButtonOnClickListener);
+        rightMouseButton.setOnClickListener(rightMouseButtonOnClickListener);
 
         buttonClear.setVisibility(View.INVISIBLE);
+        leftMouseButton.setVisibility(View.INVISIBLE);
+        rightMouseButton.setVisibility(View.INVISIBLE);
+
         editTextAddress.setVisibility(View.INVISIBLE);
         editTextPort.setVisibility(View.INVISIBLE);
 
@@ -72,61 +78,93 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    public  boolean onTouchEvent(MotionEvent motionEvent) {
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+    View.OnClickListener leftMouseButtonOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
             if (isConnected) {
                 try {
-                    String mouseCommand = Integer.toString(MOUSE_PRESS) + " " + Integer.toString((int) (motionEvent.getX() * scaleX)) +
-                            " " + Integer.toString((int) (motionEvent.getY() * scaleY));
+                    String mouseCommand = Integer.toString(MOUSE_LEFT_BUTTON_PRESS) + " " +
+                            Integer.toString((int) (mouseX * scaleX)) + " " +
+                            Integer.toString((int) (mouseY * scaleY));
                     mainTextInfo.setText(mouseCommand);
                     dataOutputStream.writeBytes(mouseCommand);
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
                     DisconnectThread disconnectThread = new DisconnectThread();
                     new Thread(disconnectThread).start();
                 }
             }
         }
-        else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-          //  if (isConnected) {
+    };
+
+    View.OnClickListener rightMouseButtonOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (isConnected) {
                 try {
-                   /* String mouseCommand = Integer.toString(MOUSE_MOVE) + " " + Integer.toString((int) (motionEvent.getX() * scaleX)) +
-                            " " + Integer.toString((int) (motionEvent.getY() * scaleY));*/
-                    String mouseCommand = Integer.toString(MOUSE_MOVE) + " " + Integer.toString((int) motionEvent.getX()) +
-                            " " + Integer.toString((int)motionEvent.getY());
+                    String mouseCommand = Integer.toString(MOUSE_RIGHT_BUTTON_PRESS) + " " +
+                            Integer.toString((int) (mouseX * scaleX)) + " " +
+                            Integer.toString((int) (mouseY * scaleY));
                     mainTextInfo.setText(mouseCommand);
-                   // dataOutputStream.writeBytes(mouseCommand);
-                }
-                catch (Exception exception) {
+                    dataOutputStream.writeBytes(mouseCommand);
+                } catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
                     DisconnectThread disconnectThread = new DisconnectThread();
                     new Thread(disconnectThread).start();
                 }
-           // }
+            }
+        }
+    };
+
+    @Override
+    public  boolean onTouchEvent(MotionEvent motionEvent) {
+        if (isConnected) {
+            try {
+                mouseX = (int) motionEvent.getX();
+                mouseY = (int) motionEvent.getY();
+                String mouseCommand = Integer.toString(MOUSE_MOVE) + " " +
+                        Integer.toString((int) (mouseX * scaleX)) + " " +
+                        Integer.toString((int) (mouseY * scaleY));
+                mainTextInfo.setText(mouseCommand);
+                dataOutputStream.writeBytes(mouseCommand);
+            } catch (Exception exception) {
+                ShowMessage("Error send mouse coordinates", exception.getMessage());
+                DisconnectThread disconnectThread = new DisconnectThread();
+                new Thread(disconnectThread).start();
+            }
         }
         return true;
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-       /* outState.putBoolean("isConnected", isConnected);
         outState.putString("mainTextInfo", mainTextInfo.getText().toString());
-        outState.putDouble("scaleX", scaleX);
-        outState.putDouble("scaleY", scaleY);
-        outState.putParcelable("serverSocket", (Parcelable) serverSocket);
-        outState.putParcelable("dataOutputStream", (Parcelable) dataOutputStream);*/
+        outState.putString("PortNumber", editTextPort.getText().toString());
+        outState.putString("IPAddress", editTextAddress.getText().toString());
+        outState.putInt("screenWidth", screenWidth);
+        outState.putInt("screenHeight", screenHeight);
+        outState.putBoolean("WasConnected", false);
+
+        if (isConnected) {
+            DisconnectThread disconnectThread = new DisconnectThread();
+            new Thread(disconnectThread).start();
+            outState.putBoolean("WasConnected", true);
+        }
     }
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-       /* isConnected = savedInstanceState.getBoolean("isConnected");
         mainTextInfo.setText(savedInstanceState.getString("mainTextInfo"));
-        scaleX = savedInstanceState.getDouble("scaleX");
-        scaleY = savedInstanceState.getDouble("scaleY");
-       // serverSocket = (Socket) savedInstanceState.getParcelable("serverSocket");
-        //dataOutputStream = (DataOutputStream) savedInstanceState.getParcelable("dataOutputStream");*/
+        editTextAddress.setText(savedInstanceState.getString("IPAddress"));
+        editTextPort.setText(savedInstanceState.getString("PortNumber"));
+        screenWidth = savedInstanceState.getInt("screenHeight");
+        screenHeight = savedInstanceState.getInt("screenWidth");
+
+        if (savedInstanceState.getBoolean("WasConnected")) {
+
+            ConnectThread connectThread = new ConnectThread();
+            new Thread(connectThread).start();
+        }
     }
 
     @Override
@@ -145,12 +183,10 @@ public class MainActivity extends AppCompatActivity {
             new Thread(closeAppThread).start();
             System.exit(0);
             return true;
-        }
-        else if (id == R.id.SettingsAction) {
+        } else if (id == R.id.SettingsAction) {
             if (isConnected) {
                 ShowMessage("Error", "To change setting disconnect first!");
-            }
-            else {
+            } else {
                 buttonClear.setVisibility(View.VISIBLE);
                 editTextAddress.setVisibility(View.VISIBLE);
                 editTextPort.setVisibility(View.VISIBLE);
@@ -158,29 +194,27 @@ public class MainActivity extends AppCompatActivity {
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
             return true;
-        }
-        else  if (id == R.id.DisconnectAction) {
+        } else if (id == R.id.DisconnectAction) {
             DisconnectThread disconnectThread = new DisconnectThread();
             new Thread(disconnectThread).start();
             return true;
-        }
-        else  if (id == R.id.ConnectAction) {
+        } else if (id == R.id.ConnectAction) {
             ConnectThread connectThread = new ConnectThread();
             new Thread(connectThread).start();
-            return  true;
-        }
-        else if (id == R.id.HelpAction) {
+            return true;
+        } else if (id == R.id.HelpAction) {
             if (isConnected) {
                 ShowMessage("Error", "You must disconnect first!");
-            }
-            else {
+            } else {
                 buttonClear.setVisibility(View.INVISIBLE);
+                leftMouseButton.setVisibility(View.INVISIBLE);
+                rightMouseButton.setVisibility(View.INVISIBLE);
                 editTextAddress.setVisibility(View.INVISIBLE);
                 editTextPort.setVisibility(View.INVISIBLE);
                 mainTextInfo.setText(R.string.HelpInfo);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
-            return  true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -191,8 +225,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 if (isConnected) {
                     ShowMessage("Connection error", "You have already been connected!");
-                }
-                else {
+                } else {
                     serverSocket = new Socket(editTextAddress.getText().toString(),
                             Integer.parseInt(editTextPort.getText().toString()));
 
@@ -208,11 +241,10 @@ public class MainActivity extends AppCompatActivity {
                     scaleX = (double) Double.parseDouble(screenSize[0]) / screenWidth;
                     scaleY = (double) Double.parseDouble(screenSize[1]) / screenHeight;
                     ShowMessage("Connection ok", "Connection successfully established!");
-                    HideAllComponents();
+                    ShowOnlyControlComponents();
                     isConnected = true;
                 }
-            }
-            catch (Exception exception) {
+            } catch (Exception exception) {
                 exception.printStackTrace();
                 ShowMessage("Connection error", exception.getMessage());
                 ShowMainAppInfo();
@@ -225,15 +257,13 @@ public class MainActivity extends AppCompatActivity {
             try {
                 if (!isConnected) {
                     ShowMessage("Disconnect error", "You have already been disconnected!");
-                }
-                else {
+                } else {
                     serverSocket.close();
                     isConnected = false;
                     ShowMessage("Disconnect ok", "You have been successfully disconnected!");
                     ShowMainAppInfo();
                 }
-            }
-            catch (Exception exception) {
+            } catch (Exception exception) {
                 exception.printStackTrace();
                 ShowMessage("Disconnect error", exception.getMessage());
                 ShowMainAppInfo();
@@ -247,20 +277,22 @@ public class MainActivity extends AppCompatActivity {
                 if (isConnected) {
                     serverSocket.close();
                 }
-            }
-            catch (Exception exception) {
+            } catch (Exception exception) {
             }
         }
     }
 
-    public  void HideAllComponents() {
+    public void ShowOnlyControlComponents() {
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 buttonClear.setVisibility(View.INVISIBLE);
                 editTextAddress.setVisibility(View.INVISIBLE);
                 editTextPort.setVisibility(View.INVISIBLE);
-                mainTextInfo.setVisibility(View.VISIBLE); //invisible
+                mainTextInfo.setVisibility(View.INVISIBLE);
+
+                leftMouseButton.setVisibility(View.VISIBLE);
+                rightMouseButton.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -269,6 +301,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 buttonClear.setVisibility(View.INVISIBLE);
+                leftMouseButton.setVisibility(View.INVISIBLE);
+                rightMouseButton.setVisibility(View.INVISIBLE);
                 editTextAddress.setVisibility(View.INVISIBLE);
                 editTextPort.setVisibility(View.INVISIBLE);
                 mainTextInfo.setText(R.string.ApplicationInfo);
