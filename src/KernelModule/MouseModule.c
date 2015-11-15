@@ -14,9 +14,10 @@
 #define BUTTON_EXTRA_PRESSED 4
 #define BUTTON_SIDE_PRESSED 5
 #define DOUBLE_CLICK 6
+#define MOVE 7
 
 
-#define KEY_WAS_PRESSED 7
+#define KEY_WAS_PRESSED 8
 #define KEY_WAS_RELEASED 0
 
 /* Представление устройства ввода */
