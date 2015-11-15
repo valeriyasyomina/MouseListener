@@ -28,6 +28,7 @@ MouseListener::~MouseListener()
 {
     if (server)
     {
+        server->close();
         delete server;
         server = NULL;
     }
@@ -57,7 +58,7 @@ void MouseListener::StartListen()
         if (!server->listen(QHostAddress::Any, portNumber))
             throw ServerListenException("Error server start listening!");
 
-        emit ServerStartedSignal(server->serverAddress().toString(), server->serverPort());
+        emit ServerStartedSignal();
         qDebug()<< "Started";
     }
 }

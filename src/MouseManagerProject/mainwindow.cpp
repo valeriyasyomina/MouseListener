@@ -10,8 +10,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->actionStop_mouse_listening->setEnabled(false);
-    ui->lblServerInfo->setText("");
-    ui->lblClientsInfo->setText("");
     try
     {
         QDesktopWidget desktop;
@@ -19,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
         Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);
 
         connect(Singleton::Instance().GetFacade(),
-                SIGNAL(ServerStartedSignal(QString,int)), this, SLOT(ServerStarted(QString,int)));
+                SIGNAL(ServerStartedSignal()), this, SLOT(ServerStarted()));
         connect(Singleton::Instance().GetFacade(),
                 SIGNAL(ServerStoppedSignal()), this, SLOT(ServerStopped()));
         connect(Singleton::Instance().GetFacade(),
@@ -117,17 +115,16 @@ void MainWindow::on_actionStop_mouse_listening_triggered()
     ui->actionStop_mouse_listening->setEnabled(false);
 }
 
-void MainWindow::ServerStarted(QString serverAddress, int serverPort)
-{
-    QString message = "Server was successfully started on " + serverAddress + QString(":") + QString::number(serverPort);
-    QMessageBox::information(this, "Start listen", message, QMessageBox::Ok);
-    ui->lblServerInfo->setText(message);
+void MainWindow::ServerStarted()
+{   
+    QMessageBox::information(this, "Start listen", "Server was successfully started!", QMessageBox::Ok);
 }
+
 void MainWindow::ServerStopped()
 {
     QMessageBox::information(this, "Stop listen", "Server was successfully stopped!", QMessageBox::Ok);
-    ui->lblServerInfo->setText("Server stopped");
 }
+
 void MainWindow::ErrorSendCommandToDevice()
 {
     QMessageBox::information(this, "Error send command to device",
@@ -136,14 +133,12 @@ void MainWindow::ErrorSendCommandToDevice()
 
 void MainWindow::ClientConnected(QString clientAddress, int clientPort)
 {
-    ui->lblClientsInfo->setText(ui->lblClientsInfo->text() +
-                                QString("Client ") + clientAddress + QString(":") +
-                                QString::number(clientPort) + QString(" connected\n"));
+    ui->lstClients->addItem(QString("Client ") + clientAddress + QString(":") +
+                            QString::number(clientPort) + QString(" connected\n"));
 }
 
 void MainWindow::ClientDisconnected(QString clientAddress, int clientPort)
 {
-    ui->lblClientsInfo->setText(ui->lblClientsInfo->text() +
-                                QString("Client ") + clientAddress + QString(":") +
-                                QString::number(clientPort) + QString(" disconnected\n"));
+    ui->lstClients->addItem(QString("Client ") + clientAddress + QString(":") +
+                            QString::number(clientPort) + QString(" disconnected\n"));
 }

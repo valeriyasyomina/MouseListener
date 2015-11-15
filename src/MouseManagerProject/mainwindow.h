@@ -36,7 +36,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 public slots:
-    void ServerStarted(QString serverAddress, int serverPort);
+    void ServerStarted();
     void ServerStopped();
     void ErrorSendCommandToDevice();
     void ClientConnected(QString clientAddress, int clientPort);
