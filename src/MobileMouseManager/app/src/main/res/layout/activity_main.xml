@@ -10,12 +10,14 @@
         android:layout_height="wrap_content"/>
     <EditText
         android:id="@+id/Ip_address"
-        android:text="@string/DefaultIP" android:layout_width="wrap_content"
+        android:text="@string/DefaultIP"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ApplicationInfoText"/>
     <EditText
         android:id="@+id/Port"
-        android:text="@string/DefaultPort" android:layout_width="wrap_content"
+        android:text="@string/DefaultPort"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/Ip_address"/>
     <Button
@@ -32,17 +34,16 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
         <Button
-            android:id="@+id/new_button"
+            android:id="@+id/LeftMouseButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New" />
+            android:text="@string/LeftMouseButton" />
         <Button
-            android:id="@+id/suggest_button"
+            android:id="@+id/RightMouseButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Suggest" />
+            android:text="@string/RightMouseButton" />
     </LinearLayout>
-
 </RelativeLayout>

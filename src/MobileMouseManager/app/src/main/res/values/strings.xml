@@ -15,4 +15,6 @@
                             4. Press \'Exit\' icon in menu to close application.\n
     </string>
     <string name="InputInvitation">Input server IP address and port</string>
+    <string name="LeftMouseButton"></string>
+    <string name="RightMouseButton"></string>
 </resources>
