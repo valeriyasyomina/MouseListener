@@ -44,6 +44,7 @@ Makefile*
 
 
 !/src/KernelModule/Makefile
+/src/MouseManagerProject/MouseManagerProject
 
 #Android
 # Built application files
