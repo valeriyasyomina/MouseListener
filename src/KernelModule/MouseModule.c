@@ -16,7 +16,6 @@
 #define DOUBLE_CLICK 6
 #define MOVE 7
 
-
 #define KEY_WAS_PRESSED 8
 #define KEY_WAS_RELEASED 0
 
@@ -39,11 +38,8 @@ static ssize_t write_vms(struct device *dev, struct device_attribute *attr, cons
 	int command_type = 0;
 
 	sscanf(buffer, "%d%d%d", &command_type, &x, &y);
-	printk("x = %d y = %d\n",x,y);
 
-	
-
-//	input_report_rel(vms_input_dev, REL_X, x);
+	//	input_report_rel(vms_input_dev, REL_X, x);
 	//input_report_rel(vms_input_dev, REL_Y, y);
 
 	input_report_abs(vms_input_dev, ABS_X, x);
