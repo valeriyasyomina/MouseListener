@@ -36,7 +36,7 @@ public slots:
     void DeviceKernelModuleRemoved();
 signals:
     void MessageReceivedSignal(const char* message);
-    void ServerStartedSignal(QString serverAddress, int serverPort);
+    void ServerStartedSignal();
     void ServerStoppedSignal();
     void ClientConnectedSignal(QString clientAddress, int clientPort);
     void ClientDisconnectedSignal(QString clientAddress, int clientPort);

@@ -9,7 +9,7 @@ Facade::Facade()
         deviceManager = new DeviceManager();
 
         connect(mouseListener, SIGNAL(MessageReceivedSignal(const char*)),deviceManager, SLOT(SendCommandToDevice(const char*)));
-        connect(mouseListener, SIGNAL(ServerStartedSignal(QString,int)), this, SLOT(ServerStarted(QString,int)));
+        connect(mouseListener, SIGNAL(ServerStartedSignal()), this, SLOT(ServerStarted()));
         connect(mouseListener, SIGNAL(ServerStoppedSignal()), this, SLOT(ServerStopped()));
         connect(mouseListener, SIGNAL(ClientConnectedSignal(QString,int)), this, SLOT(ClientConnected(QString,int)));
         connect(mouseListener, SIGNAL(ClientDisconnectedSignal(QString,int)), this, SLOT(ClientDisconnected(QString,int)));

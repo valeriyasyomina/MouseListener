@@ -18,13 +18,13 @@ public:
     MouseListener* GetMouseListener() {return mouseListener;}
     DeviceManager* GetDeviceManager() {return deviceManager;}
 public slots:
-    void ServerStarted(QString serverAddress, int serverPort) {emit ServerStartedSignal(serverAddress, serverPort);}
+    void ServerStarted() {emit ServerStartedSignal();}
     void ServerStopped() {emit ServerStoppedSignal();}
     void ErrorSendCommandToDevice() {emit ErrorSendCommandToDeviceSignal();}
     void ClientConnected(QString clientAddress, int clientPort) {emit ClientConnectedSignal(clientAddress, clientPort);}
     void ClientDisconnected(QString clientAddress, int clientPort) {emit ClientDisconnectedSignal(clientAddress, clientPort);}
 signals:
-    void ServerStartedSignal(QString serverAddress, int serverPort);
+    void ServerStartedSignal();
     void ServerStoppedSignal();
     void ErrorSendCommandToDeviceSignal();
     void ClientConnectedSignal(QString clientAddress, int clientPort);
