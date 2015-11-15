@@ -16,7 +16,6 @@ MouseListener::MouseListener()
         screenHeight = DEFAULT_SCREEN_HEIGHT;
         screenWidth = DEFAULT_SCREEN_WIDTH;
         deviceKernelModuleLoaded = false;
-        qDebug()<< "ML ctor";
     }
     catch (std::bad_alloc& exception)
     {
@@ -59,7 +58,6 @@ void MouseListener::StartListen()
             throw ServerListenException("Error server start listening!");
 
         emit ServerStartedSignal();
-        qDebug()<< "Started";
     }
 }
 
@@ -85,17 +83,12 @@ void MouseListener::SetPortNumber(int port)
 /// \brief MouseListener::onNewConnection  Вызывается при появлении нового подключенного клиента
 ///
 void MouseListener::onNewConnection()
-{
-    qDebug()<< "server: New connection";
+{    
     socket = server->nextPendingConnection();
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
-   /* if(socket->state() == QTcpSocket::ConnectedState)
-    {
-        qDebug()<<socket->peerPort();
-    }*/
     QString screenSize = QString::number(screenWidth) + " " + QString::number(screenHeight);
     socket->write(screenSize.toUtf8().data(), strlen(screenSize.toUtf8().data()));
 
@@ -108,14 +101,14 @@ void MouseListener::onNewConnection()
 void MouseListener::onReadyRead()
 {
     char socketData[MAX_BUFFER_SIZE];
-    qDebug()<< "server: read";
+
     int numberOfBytes = socket->read(socketData, MAX_BUFFER_SIZE);
     if (numberOfBytes <= 0)
         throw SocketReadDataException("Error read data from socket");
     socketData[numberOfBytes] = '\0';
-    qDebug() << "Client sended to me:";
-    qDebug() << socketData;
-    qDebug() << "\n";
+  //  qDebug() << "Client sended to me:";
+   // qDebug() << socketData;
+  //  qDebug() << "\n";
     emit MessageReceivedSignal(socketData);
 }
 
@@ -124,8 +117,7 @@ void MouseListener::onReadyRead()
 /// \brief MouseListener::onDisconnected    Вызывается, когда клиент завершает соединение
 ///
 void MouseListener::onDisconnected()
-{
-    qDebug()<< "disconnct";
+{   
     disconnect(socket, SIGNAL(disconnected()));
     disconnect(socket, SIGNAL(readyRead()));
     emit ClientDisconnectedSignal(socket->peerAddress().toString(), socket->peerPort());
