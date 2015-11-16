@@ -141,8 +141,6 @@ public class MainActivity extends AppCompatActivity {
         outState.putString("mainTextInfo", mainTextInfo.getText().toString());
         outState.putString("PortNumber", editTextPort.getText().toString());
         outState.putString("IPAddress", editTextAddress.getText().toString());
-        outState.putInt("screenWidth", screenWidth);
-        outState.putInt("screenHeight", screenHeight);
         outState.putBoolean("WasConnected", false);
 
         if (isConnected) {
@@ -157,11 +155,8 @@ public class MainActivity extends AppCompatActivity {
         mainTextInfo.setText(savedInstanceState.getString("mainTextInfo"));
         editTextAddress.setText(savedInstanceState.getString("IPAddress"));
         editTextPort.setText(savedInstanceState.getString("PortNumber"));
-        screenWidth = savedInstanceState.getInt("screenHeight");
-        screenHeight = savedInstanceState.getInt("screenWidth");
 
         if (savedInstanceState.getBoolean("WasConnected")) {
-
             ConnectThread connectThread = new ConnectThread();
             new Thread(connectThread).start();
         }
