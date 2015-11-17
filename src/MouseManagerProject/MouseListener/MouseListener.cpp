@@ -10,13 +10,17 @@ MouseListener::MouseListener()
 {
     try
     {
-        server = new QTcpServer(this);
-        connect(server, SIGNAL(newConnection()),this, SLOT(onNewConnection()));
-        portNumber = 0;
+        TCPServer = new QTcpServer(this);
+        connect(TCPServer, SIGNAL(newConnection()),this, SLOT(onNewConnection()));
+        TCPPortNumber = 0;
+        UDPPortNumber = 0;
         screenHeight = DEFAULT_SCREEN_HEIGHT;
         screenWidth = DEFAULT_SCREEN_WIDTH;
         deviceKernelModuleLoaded = false;
-        qDebug()<< "ML ctor";
+
+        UDPServer = new QUdpSocket(this);
+        connect(UDPServer, SIGNAL(readyRead()),this, SLOT(onReadyReadDatagram()));
+
     }
     catch (std::bad_alloc& exception)
     {
@@ -26,11 +30,17 @@ MouseListener::MouseListener()
 
 MouseListener::~MouseListener()
 {
-    if (server)
+    if (TCPServer)
     {
-        server->close();
-        delete server;
-        server = NULL;
+        TCPServer->close();
+        delete TCPServer;
+        TCPServer = NULL;
+    }
+    if (UDPServer)
+    {
+        UDPServer->close();
+        delete UDPServer;
+        UDPServer = NULL;
     }
 }
 
@@ -51,15 +61,16 @@ void MouseListener::SetScreenSize(const QSize& screenSize)
 ///
 void MouseListener::StartListen()
 {
-    if (!server->isListening())
+    if (!TCPServer->isListening())
     {
         if (!deviceKernelModuleLoaded)
             throw ServerListenException("You must load kernel module before start listening!");
-        if (!server->listen(QHostAddress::Any, portNumber))
+        if (!TCPServer->listen(QHostAddress::Any, TCPPortNumber))
             throw ServerListenException("Error server start listening!");
+        if (!UDPServer->bind(QHostAddress::Any, UDPPortNumber))
+            throw ServerListenException("Error bind server!");
 
         emit ServerStartedSignal();
-        qDebug()<< "Started";
     }
 }
 
@@ -68,17 +79,28 @@ void MouseListener::StartListen()
 ///
 void MouseListener::StopListen()
 {
-    server->close();
+    TCPServer->close();
+    UDPServer->close();
+
     emit ServerStoppedSignal();
 }
 
 ///
-/// \brief MouseListener::SetPortNumber  Устанавливает номер порта
+/// \brief MouseListener::SetPortNumber  Устанавливает номер порта для TCP подключения
 /// \param port Номер порта
 ///
-void MouseListener::SetPortNumber(int port)
+void MouseListener::SetTCPPortNumber(int port)
 {
-    portNumber = port;
+    TCPPortNumber = port;
+}
+
+///
+/// \brief MouseListener::SetUDPPortNumber Устанавливает номер порта для UDP подключения
+/// \param port Номер порта
+///
+void MouseListener::SetUDPPortNumber(int port)
+{
+    UDPPortNumber = port;
 }
 
 ///
@@ -86,50 +108,44 @@ void MouseListener::SetPortNumber(int port)
 ///
 void MouseListener::onNewConnection()
 {
-    qDebug()<< "server: New connection";
-    socket = server->nextPendingConnection();
+    TCPClient = TCPServer->nextPendingConnection();
 
-    connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(TCPClient, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
-   /* if(socket->state() == QTcpSocket::ConnectedState)
-    {
-        qDebug()<<socket->peerPort();
-    }*/
-    QString screenSize = QString::number(screenWidth) + " " + QString::number(screenHeight);
-    socket->write(screenSize.toUtf8().data(), strlen(screenSize.toUtf8().data()));
+    QString serverData = QString::number(UDPPortNumber) + " " + QString::number(screenWidth) + " " + QString::number(screenHeight);
+    TCPClient->write(serverData.toUtf8().data(), strlen(serverData.toUtf8().data()));
 
-    emit ClientConnectedSignal(socket->peerAddress().toString(), socket->peerPort());
+    emit ClientConnectedSignal(TCPClient->peerAddress().toString(), TCPClient->peerPort());
 }
 
 ///
-/// \brief MouseListener::onReadyRead   Вызывается, когда на сокете появляются данные дл чтения
+/// \brief MouseListener::onReadyRead   Вызывается, когда на UDP сокете появляются данные дл чтения
 ///
-void MouseListener::onReadyRead()
+void MouseListener::onReadyReadDatagram()
 {
-    char socketData[MAX_BUFFER_SIZE];
-    qDebug()<< "server: read";
-    int numberOfBytes = socket->read(socketData, MAX_BUFFER_SIZE);
+    QByteArray socketData;
+    socketData.resize(UDPServer->pendingDatagramSize());
+
+    QHostAddress sender;
+    quint16 senderPort;
+
+    int numberOfBytes = UDPServer->readDatagram(socketData.data(), socketData.size(),
+                            &sender, &senderPort);
     if (numberOfBytes <= 0)
         throw SocketReadDataException("Error read data from socket");
-    socketData[numberOfBytes] = '\0';
-    qDebug() << "Client sended to me:";
-    qDebug() << socketData;
-    qDebug() << "\n";
+
     emit MessageReceivedSignal(socketData);
 }
-
 
 ///
 /// \brief MouseListener::onDisconnected    Вызывается, когда клиент завершает соединение
 ///
 void MouseListener::onDisconnected()
-{
-    qDebug()<< "disconnct";
-    disconnect(socket, SIGNAL(disconnected()));
-    disconnect(socket, SIGNAL(readyRead()));
-    emit ClientDisconnectedSignal(socket->peerAddress().toString(), socket->peerPort());
-    socket->deleteLater();    
+{   
+    disconnect(TCPClient, SIGNAL(disconnected()));
+
+    emit ClientDisconnectedSignal(TCPClient->peerAddress().toString(), TCPClient->peerPort());
+    TCPClient->deleteLater();
 }
 
 ///

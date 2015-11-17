@@ -27,9 +27,7 @@ void DeviceManager::CloseDeviceFile()
 /// \param command  Команда
 ///
 void DeviceManager::SendCommandToDevice(const char* command)
-{
-    qDebug()<< "In device manager";
-    qDebug()<< command;
+{    
     int commandSendRes = write(deviceFileDescriptor, command, strlen(command));
     if (commandSendRes < 0)
         emit ErrorSendCommandToDeviceSignal();

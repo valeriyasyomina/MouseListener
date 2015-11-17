@@ -8,7 +8,6 @@ Singleton::Singleton()
     try
     {
         facade = new Facade();
-        qDebug()<< "Singlon ctor";
     }
     catch (std::bad_alloc& exception)
     {

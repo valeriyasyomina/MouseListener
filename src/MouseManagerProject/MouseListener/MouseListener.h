@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QUdpSocket>
 
 static const int MAX_BUFFER_SIZE = 64;
 static const int DEFAULT_SCREEN_HEIGHT = 600;
@@ -13,9 +14,12 @@ class MouseListener: public QObject
 {
     Q_OBJECT
 private:
-     QTcpServer* server;
-     QTcpSocket* socket;
-     int portNumber;
+
+     QTcpServer* TCPServer;
+     QTcpSocket* TCPClient;
+     QUdpSocket* UDPServer;
+     int TCPPortNumber;
+     int UDPPortNumber;
      int screenWidth;
      int screenHeight;
      bool deviceKernelModuleLoaded;
@@ -25,15 +29,18 @@ public:
 
     void StartListen();
     void StopListen();
-    void SetPortNumber(int port);
+
+    void SetTCPPortNumber(int port);
+    void SetUDPPortNumber(int port);
+
     void SetScreenSize(const QSize& screenSize);
 public slots:
     void onNewConnection();
-    void onReadyRead();
     void onDisconnected();
 
     void DeviceKernelModuleInserted();
     void DeviceKernelModuleRemoved();
+    void onReadyReadDatagram();
 signals:
     void MessageReceivedSignal(const char* message);
     void ServerStartedSignal();

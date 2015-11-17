@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-static const int portNumber = 8000;
+static const int TCPPortNumber = 8000;
+static const int UDPPortNumber = 8080;
 static std::string deviceFileName = "/sys/devices/platform/vms/coordinates";
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -61,7 +62,8 @@ void MainWindow::on_actionStart_mouse_listening_triggered()
 {
     try
     {
-        Singleton::Instance().GetFacade()->GetMouseListener()->SetPortNumber(portNumber);
+        Singleton::Instance().GetFacade()->GetMouseListener()->SetTCPPortNumber(TCPPortNumber);
+        Singleton::Instance().GetFacade()->GetMouseListener()->SetUDPPortNumber(UDPPortNumber);
         Singleton::Instance().GetFacade()->GetMouseListener()->StartListen();
         ui->actionRemove_device_module->setEnabled(false);
         ui->actionLoad_device_module->setEnabled(false);
