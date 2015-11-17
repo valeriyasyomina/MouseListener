@@ -3,6 +3,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import java.net.InetAddress;
 import java.net.Socket;
 import android.view.View;
 import android.view.MotionEvent;
@@ -10,30 +11,37 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.app.AlertDialog;
 import android.widget.TextView;
-import java.io.DataOutputStream;
 import android.view.Display;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.DatagramSocket;
+import java.net.DatagramPacket;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int BUFFER_SIZE = 32;
+    private static final int BUFFER_SIZE = 64;
     private static final int MOUSE_MOVE = 7;
     private static final int MOUSE_LEFT_BUTTON_PRESS = 1;
     private static final int MOUSE_RIGHT_BUTTON_PRESS = 2;
+    private static final int UDP_PORT_INDEX = 0;
+    private static final int SCREEN_WIDTH_INDEX = 1;
+    private static final int SCREEN_HEIGHT_INDEX = 2;
 
     private EditText editTextAddress, editTextPort;
     private Button  buttonClear, leftMouseButton, rightMouseButton;
     private TextView mainTextInfo = null;
     private Socket serverSocket = null;
     private boolean isConnected = false;
-    DataOutputStream dataOutputStream = null;
 
     int screenWidth = 0, screenHeight = 0;
     double scaleX = 0.0, scaleY = 0.0;
     int mouseX = 0, mouseY = 0;
+    private int UDPPortNumber = 0;
+
+    private DatagramSocket serverDatagramSocket = null;
+    InetAddress serverAddress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +94,12 @@ public class MainActivity extends AppCompatActivity {
                     String mouseCommand = Integer.toString(MOUSE_LEFT_BUTTON_PRESS) + " " +
                             Integer.toString((int) (mouseX * scaleX)) + " " +
                             Integer.toString((int) (mouseY * scaleY));
-                    mainTextInfo.setText(mouseCommand);
-                    dataOutputStream.writeBytes(mouseCommand);
+
+                    DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
+                            mouseCommand.length(), serverAddress, UDPPortNumber);
+
+                    serverDatagramSocket.send(datagramPacket);
+
                 } catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
                     DisconnectThread disconnectThread = new DisconnectThread();
@@ -105,8 +117,12 @@ public class MainActivity extends AppCompatActivity {
                     String mouseCommand = Integer.toString(MOUSE_RIGHT_BUTTON_PRESS) + " " +
                             Integer.toString((int) (mouseX * scaleX)) + " " +
                             Integer.toString((int) (mouseY * scaleY));
-                    mainTextInfo.setText(mouseCommand);
-                    dataOutputStream.writeBytes(mouseCommand);
+
+                    DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
+                            mouseCommand.length(), serverAddress, UDPPortNumber);
+
+                    serverDatagramSocket.send(datagramPacket);
+
                 } catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
                     DisconnectThread disconnectThread = new DisconnectThread();
@@ -118,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public  boolean onTouchEvent(MotionEvent motionEvent) {
+
         if (isConnected) {
             try {
                 mouseX = (int) motionEvent.getX();
@@ -125,8 +142,12 @@ public class MainActivity extends AppCompatActivity {
                 String mouseCommand = Integer.toString(MOUSE_MOVE) + " " +
                         Integer.toString((int) (mouseX * scaleX)) + " " +
                         Integer.toString((int) (mouseY * scaleY));
-                mainTextInfo.setText(mouseCommand);
-                dataOutputStream.writeBytes(mouseCommand);
+
+                DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
+                        mouseCommand.length(), serverAddress, UDPPortNumber);
+
+                serverDatagramSocket.send(datagramPacket);
+
             } catch (Exception exception) {
                 ShowMessage("Error send mouse coordinates", exception.getMessage());
                 DisconnectThread disconnectThread = new DisconnectThread();
@@ -228,13 +249,19 @@ public class MainActivity extends AppCompatActivity {
 
                     char[] buffer = new char[BUFFER_SIZE];
                     inputStream.read(buffer, 0, BUFFER_SIZE);
-                    dataOutputStream = new DataOutputStream(serverSocket.getOutputStream());
 
-                    String PCScreenSize = String.valueOf(buffer);
+                    String serverData = String.valueOf(buffer);
 
-                    String[] screenSize = PCScreenSize.split(" ");
-                    scaleX = (double) Double.parseDouble(screenSize[0]) / screenWidth;
-                    scaleY = (double) Double.parseDouble(screenSize[1]) / screenHeight;
+                    String[] stringsArray = serverData.split(" ");
+                    UDPPortNumber = Integer.parseInt(stringsArray[UDP_PORT_INDEX]);
+                    scaleX = (double) Double.parseDouble(stringsArray[SCREEN_WIDTH_INDEX]) / screenWidth;
+                    scaleY = (double) Double.parseDouble(stringsArray[SCREEN_HEIGHT_INDEX]) / screenHeight;
+
+                    serverDatagramSocket = new DatagramSocket();
+                    serverDatagramSocket.setBroadcast(false);
+
+                    serverAddress = InetAddress.getByName(editTextAddress.getText().toString());
+
                     ShowMessage("Connection ok", "Connection successfully established!");
                     ShowOnlyControlComponents();
                     isConnected = true;
@@ -254,6 +281,7 @@ public class MainActivity extends AppCompatActivity {
                     ShowMessage("Disconnect error", "You have already been disconnected!");
                 } else {
                     serverSocket.close();
+                    serverDatagramSocket.close();
                     isConnected = false;
                     ShowMessage("Disconnect ok", "You have been successfully disconnected!");
                     ShowMainAppInfo();
@@ -271,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 if (isConnected) {
                     serverSocket.close();
+                    serverDatagramSocket.close();
                 }
             } catch (Exception exception) {
             }
