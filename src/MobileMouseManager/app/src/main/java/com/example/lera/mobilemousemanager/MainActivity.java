@@ -30,9 +30,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int UDP_PORT_INDEX = 0;
     private static final int SCREEN_WIDTH_INDEX = 1;
     private static final int SCREEN_HEIGHT_INDEX = 2;
+    private static final int BROADCAST_PORT_NUMBER = 9000;
+    private static final int RECEIVE_INTERVAL_MILE_SECONDS = 1000;
+    private static final String BROADCAST_IP_ADDRESS = "255.255.255.255";
 
-    private EditText editTextAddress, editTextPort;
-    private Button  buttonClear, leftMouseButton, rightMouseButton;
+    private Button leftMouseButton, rightMouseButton;
     private TextView mainTextInfo = null;
     private Socket serverSocket = null;
     private boolean isConnected = false;
@@ -43,35 +45,26 @@ public class MainActivity extends AppCompatActivity {
     int mouseX = 0, mouseY = 0;
 
     private int UDPPortNumber = 0;
+    private int TCPPortNumber = 0;
 
     private DatagramSocket serverDatagramSocket = null;
-    InetAddress serverAddress = null;
-
+    private InetAddress serverAddress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        editTextAddress = (EditText)findViewById(R.id.Ip_address);
-        editTextPort = (EditText)findViewById(R.id.Port);
-
-        buttonClear = (Button)findViewById(R.id.ButtonClear);
         leftMouseButton = (Button) findViewById(R.id.LeftMouseButton);
         rightMouseButton = (Button) findViewById(R.id.RightMouseButton);
 
         mainTextInfo = (TextView) findViewById(R.id.ApplicationInfoText);
 
-        buttonClear.setOnClickListener(buttonClearClickListener);
         leftMouseButton.setOnClickListener(leftMouseButtonOnClickListener);
         rightMouseButton.setOnClickListener(rightMouseButtonOnClickListener);
 
-        buttonClear.setVisibility(View.INVISIBLE);
         leftMouseButton.setVisibility(View.INVISIBLE);
         rightMouseButton.setVisibility(View.INVISIBLE);
-
-        editTextAddress.setVisibility(View.INVISIBLE);
-        editTextPort.setVisibility(View.INVISIBLE);
 
         WindowManager windowManager = this.getWindowManager();
         Display display = windowManager.getDefaultDisplay();
@@ -80,14 +73,38 @@ public class MainActivity extends AppCompatActivity {
 
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
+
+        FindServer();
     }
 
+    private void FindServer() {
+        try {
 
-    View.OnClickListener buttonClearClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            editTextPort.setText("");
-            editTextAddress.setText("");
+            DatagramSocket findServerSocket = new DatagramSocket();
+            findServerSocket.setBroadcast(true);
+
+            byte[] serverMessage = new byte[BUFFER_SIZE];
+            DatagramPacket serverAnswer = new DatagramPacket(serverMessage, serverMessage.length);
+
+            String message = "New client";
+            DatagramPacket datagramPacket = new DatagramPacket(message.getBytes(), message.length(),
+                    InetAddress.getByName(BROADCAST_IP_ADDRESS), BROADCAST_PORT_NUMBER);
+
+            findServerSocket.send(datagramPacket);
+            findServerSocket.setSoTimeout(RECEIVE_INTERVAL_MILE_SECONDS);
+            findServerSocket.receive(serverAnswer);
+
+            serverAddress = serverAnswer.getAddress();
+
+            String portNumberStr = new String(serverAnswer.getData());
+            portNumberStr = portNumberStr.trim().replaceAll("\n", "");
+            TCPPortNumber = Integer.parseInt(portNumberStr);
+
+            findServerSocket.close();
+
+        } catch (Exception exception) {
+            ShowMessage("Find server exception", exception.getMessage());
+            System.exit(0);
         }
     };
 
@@ -100,12 +117,10 @@ public class MainActivity extends AppCompatActivity {
                             Integer.toString((int) (mouseX * scaleX)) + " " +
                             Integer.toString((int) (mouseY * scaleY));
 
-
                     DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
                             mouseCommand.length(), serverAddress, UDPPortNumber);
 
                     serverDatagramSocket.send(datagramPacket);
-
 
                 } catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
@@ -125,12 +140,10 @@ public class MainActivity extends AppCompatActivity {
                             Integer.toString((int) (mouseX * scaleX)) + " " +
                             Integer.toString((int) (mouseY * scaleY));
 
-
                     DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
                             mouseCommand.length(), serverAddress, UDPPortNumber);
 
                     serverDatagramSocket.send(datagramPacket);
-
 
                 } catch (Exception exception) {
                     ShowMessage("Error send mouse coordinates", exception.getMessage());
@@ -152,12 +165,10 @@ public class MainActivity extends AppCompatActivity {
                         Integer.toString((int) (mouseX * scaleX)) + " " +
                         Integer.toString((int) (mouseY * scaleY));
 
-
                 DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
                         mouseCommand.length(), serverAddress, UDPPortNumber);
 
                 serverDatagramSocket.send(datagramPacket);
-
 
             } catch (Exception exception) {
                 ShowMessage("Error send mouse coordinates", exception.getMessage());
@@ -171,8 +182,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("mainTextInfo", mainTextInfo.getText().toString());
-        outState.putString("PortNumber", editTextPort.getText().toString());
-        outState.putString("IPAddress", editTextAddress.getText().toString());
 
         outState.putBoolean("WasConnected", false);
 
@@ -186,9 +195,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mainTextInfo.setText(savedInstanceState.getString("mainTextInfo"));
-        editTextAddress.setText(savedInstanceState.getString("IPAddress"));
-        editTextPort.setText(savedInstanceState.getString("PortNumber"));
-
 
         if (savedInstanceState.getBoolean("WasConnected")) {
 
@@ -213,18 +219,7 @@ public class MainActivity extends AppCompatActivity {
             new Thread(closeAppThread).start();
             System.exit(0);
             return true;
-        } else if (id == R.id.SettingsAction) {
-            if (isConnected) {
-                ShowMessage("Error", "To change setting disconnect first!");
-            } else {
-                buttonClear.setVisibility(View.VISIBLE);
-                editTextAddress.setVisibility(View.VISIBLE);
-                editTextPort.setVisibility(View.VISIBLE);
-                mainTextInfo.setText(R.string.InputInvitation);
-                mainTextInfo.setVisibility(View.VISIBLE);
-            }
-            return true;
-        } else if (id == R.id.DisconnectAction) {
+        }else if (id == R.id.DisconnectAction) {
             DisconnectThread disconnectThread = new DisconnectThread();
             new Thread(disconnectThread).start();
             return true;
@@ -236,11 +231,8 @@ public class MainActivity extends AppCompatActivity {
             if (isConnected) {
                 ShowMessage("Error", "You must disconnect first!");
             } else {
-                buttonClear.setVisibility(View.INVISIBLE);
                 leftMouseButton.setVisibility(View.INVISIBLE);
                 rightMouseButton.setVisibility(View.INVISIBLE);
-                editTextAddress.setVisibility(View.INVISIBLE);
-                editTextPort.setVisibility(View.INVISIBLE);
                 mainTextInfo.setText(R.string.HelpInfo);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }
@@ -256,14 +248,13 @@ public class MainActivity extends AppCompatActivity {
                 if (isConnected) {
                     ShowMessage("Connection error", "You have already been connected!");
                 } else {
-                    serverSocket = new Socket(editTextAddress.getText().toString(),
-                            Integer.parseInt(editTextPort.getText().toString()));
+
+                    serverSocket = new Socket(serverAddress, TCPPortNumber);
 
                     BufferedReader inputStream = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
 
                     char[] buffer = new char[BUFFER_SIZE];
                     inputStream.read(buffer, 0, BUFFER_SIZE);
-
 
                     String serverData = String.valueOf(buffer);
 
@@ -274,9 +265,6 @@ public class MainActivity extends AppCompatActivity {
 
                     serverDatagramSocket = new DatagramSocket();
                     serverDatagramSocket.setBroadcast(false);
-
-                    serverAddress = InetAddress.getByName(editTextAddress.getText().toString());
-
 
                     ShowMessage("Connection ok", "Connection successfully established!");
                     ShowOnlyControlComponents();
@@ -326,25 +314,18 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                buttonClear.setVisibility(View.INVISIBLE);
-                editTextAddress.setVisibility(View.INVISIBLE);
-                editTextPort.setVisibility(View.INVISIBLE);
                 mainTextInfo.setVisibility(View.INVISIBLE);
-
                 leftMouseButton.setVisibility(View.VISIBLE);
                 rightMouseButton.setVisibility(View.VISIBLE);
             }
         });
     }
-    public  void ShowMainAppInfo() {
+    public void ShowMainAppInfo() {
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                buttonClear.setVisibility(View.INVISIBLE);
                 leftMouseButton.setVisibility(View.INVISIBLE);
                 rightMouseButton.setVisibility(View.INVISIBLE);
-                editTextAddress.setVisibility(View.INVISIBLE);
-                editTextPort.setVisibility(View.INVISIBLE);
                 mainTextInfo.setText(R.string.ApplicationInfo);
                 mainTextInfo.setVisibility(View.VISIBLE);
             }

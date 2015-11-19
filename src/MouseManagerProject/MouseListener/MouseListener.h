@@ -14,12 +14,13 @@ class MouseListener: public QObject
 {
     Q_OBJECT
 private:
-
      QTcpServer* TCPServer;
      QTcpSocket* TCPClient;
      QUdpSocket* UDPServer;
+     QUdpSocket* UDPServerBroadcast;
      int TCPPortNumber;
      int UDPPortNumber;
+     int broadCastPortNumber;
      int screenWidth;
      int screenHeight;
      bool deviceKernelModuleLoaded;
@@ -32,6 +33,7 @@ public:
 
     void SetTCPPortNumber(int port);
     void SetUDPPortNumber(int port);
+    void SetBroadCastPortNumber(int port);
 
     void SetScreenSize(const QSize& screenSize);
 public slots:
@@ -41,12 +43,14 @@ public slots:
     void DeviceKernelModuleInserted();
     void DeviceKernelModuleRemoved();
     void onReadyReadDatagram();
+    void onReadyFindServer();
 signals:
     void MessageReceivedSignal(const char* message);
     void ServerStartedSignal();
     void ServerStoppedSignal();
     void ClientConnectedSignal(QString clientAddress, int clientPort);
     void ClientDisconnectedSignal(QString clientAddress, int clientPort);
+    void ClientBroadCastSignal(QString clientAddress, int clientPort);
 };
 
 #endif // MOUSELISTENER_H

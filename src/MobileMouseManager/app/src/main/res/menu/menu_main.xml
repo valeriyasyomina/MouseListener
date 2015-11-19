@@ -15,12 +15,6 @@
         android:orderInCategory="100"
         app:showAsAction="always" />
     <item
-        android:id="@+id/SettingsAction"
-        android:title="@string/SettingsString"
-        android:icon="@drawable/settings"
-        android:orderInCategory="100"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/HelpAction"
         android:title="@string/HelpString"
         android:icon="@drawable/help"

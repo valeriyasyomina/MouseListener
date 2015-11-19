@@ -8,24 +8,6 @@
         android:text="@string/ApplicationInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-    <EditText
-        android:id="@+id/Ip_address"
-        android:text="@string/DefaultIP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ApplicationInfoText"/>
-    <EditText
-        android:id="@+id/Port"
-        android:text="@string/DefaultPort"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/Ip_address"/>
-    <Button
-        android:id="@+id/ButtonClear"
-        android:text="Clear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/Port"/>
 
     <LinearLayout
         android:id="@+id/MouseButtons"

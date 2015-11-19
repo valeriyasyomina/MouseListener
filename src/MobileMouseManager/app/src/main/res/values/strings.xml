@@ -1,8 +1,5 @@
 <resources>
-    <string name="ApplicationName"></string>
-    <string name="DefaultIP">192.168.0.14</string>
-    <string name="DefaultPort">8000</string>
-    <string name="SettingsString">Settings</string>
+    <string name="ApplicationName">PCMouse</string>
     <string name="ExitString">Exit</string>
     <string name="ConnectString">Connect</string>
     <string name="DisconnectString">Disconnect</string>
@@ -10,9 +7,8 @@
     <string name="ApplicationInfo">Mobile mouse application was developed for remote PC mouse
     control from mobile device.</string>
     <string name="HelpInfo">1. Press \'Connect\' icon in menu to connect server.\n
-                            2. Press \'Settings\' icon in menu to change server parameters.\n
-                            3. Press \'Disconnect\' icon in menu to disconnect from server.\n
-                            4. Press \'Exit\' icon in menu to close application.\n
+                            2. Press \'Disconnect\' icon in menu to disconnect from server.\n
+                            3. Press \'Exit\' icon in menu to close application.\n
     </string>
     <string name="InputInvitation">Input server IP address and port</string>
     <string name="LeftMouseButton"></string>

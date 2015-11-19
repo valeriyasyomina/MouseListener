@@ -3,6 +3,8 @@
 
 static const int TCPPortNumber = 8000;
 static const int UDPPortNumber = 8080;
+static const int broadCastPortNumber = 9000;
+
 static std::string deviceFileName = "/sys/devices/platform/vms/coordinates";
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -16,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
         QDesktopWidget desktop;
         QSize screenSize = desktop.geometry().size();
         Singleton::Instance().GetFacade()->GetMouseListener()->SetScreenSize(screenSize);
+        Singleton::Instance().GetFacade()->GetMouseListener()->SetTCPPortNumber(TCPPortNumber);
+        Singleton::Instance().GetFacade()->GetMouseListener()->SetUDPPortNumber(UDPPortNumber);
+        Singleton::Instance().GetFacade()->GetMouseListener()->SetBroadCastPortNumber(broadCastPortNumber);
 
         connect(Singleton::Instance().GetFacade(),
                 SIGNAL(ServerStartedSignal()), this, SLOT(ServerStarted()));
@@ -27,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
                 SIGNAL(ClientConnectedSignal(QString,int)), this, SLOT(ClientConnected(QString,int)));
         connect(Singleton::Instance().GetFacade(),
                 SIGNAL(ClientDisconnectedSignal(QString,int)), this, SLOT(ClientDisconnected(QString,int)));
+        connect(Singleton::Instance().GetFacade(),
+                SIGNAL(ClientBroadCastSignal(QString,int)), this, SLOT(ClientBroadCast(QString,int)));
     }
     catch (Exception& exception)
     {}
@@ -61,9 +68,7 @@ void MainWindow::on_actionRemove_device_module_triggered()
 void MainWindow::on_actionStart_mouse_listening_triggered()
 {
     try
-    {
-        Singleton::Instance().GetFacade()->GetMouseListener()->SetTCPPortNumber(TCPPortNumber);
-        Singleton::Instance().GetFacade()->GetMouseListener()->SetUDPPortNumber(UDPPortNumber);
+    {        
         Singleton::Instance().GetFacade()->GetMouseListener()->StartListen();
         ui->actionRemove_device_module->setEnabled(false);
         ui->actionLoad_device_module->setEnabled(false);
@@ -143,4 +148,10 @@ void MainWindow::ClientDisconnected(QString clientAddress, int clientPort)
 {
     ui->lstClients->addItem(QString("Client ") + clientAddress + QString(":") +
                             QString::number(clientPort) + QString(" disconnected\n"));
+}
+
+void MainWindow::ClientBroadCast(QString clientAddress, int clientPort)
+{
+    ui->lstClients->addItem(QString("Broadcast request from client ") + clientAddress + QString(":") +
+                            QString::number(clientPort) + "\n");
 }
