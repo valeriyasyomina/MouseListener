@@ -103,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
             findServerSocket.close();
 
         } catch (Exception exception) {
-            ShowMessage("Find server exception", exception.getMessage());
-            System.exit(0);
+            ShowMessageWithAppClose("Find server exception", exception.getMessage());
+           // System.exit(0);
         }
     };
 
@@ -341,6 +341,20 @@ public class MainActivity extends AppCompatActivity {
                 dlgAlert.setPositiveButton("OK", null);
                 dlgAlert.setCancelable(true);
                 dlgAlert.create().show();
+            }
+        });
+    }
+
+    public void ShowMessageWithAppClose(final String title, final String message) {
+        MainActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(MainActivity.this);
+                dlgAlert.setMessage(message);
+                dlgAlert.setTitle(title);
+                dlgAlert.setPositiveButton("OK", null);
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
+                System.exit(0);
             }
         });
     }
