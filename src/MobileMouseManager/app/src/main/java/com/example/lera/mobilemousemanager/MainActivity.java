@@ -8,16 +8,13 @@ import java.net.Socket;
 import android.view.View;
 import android.view.MotionEvent;
 import android.widget.Button;
-import android.widget.EditText;
 import android.app.AlertDialog;
 import android.widget.TextView;
-
 import android.view.Display;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 
@@ -38,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView mainTextInfo = null;
     private Socket serverSocket = null;
     private boolean isConnected = false;
-
 
     int screenWidth = 0, screenHeight = 0;
     double scaleX = 0.0, scaleY = 0.0;
@@ -103,8 +99,7 @@ public class MainActivity extends AppCompatActivity {
             findServerSocket.close();
 
         } catch (Exception exception) {
-            ShowMessageWithAppClose("Find server exception", exception.getMessage());
-           // System.exit(0);
+            ShowMessage("Find server exception", "Server not found! Launch server and restart mobile app");
         }
     };
 
@@ -341,20 +336,6 @@ public class MainActivity extends AppCompatActivity {
                 dlgAlert.setPositiveButton("OK", null);
                 dlgAlert.setCancelable(true);
                 dlgAlert.create().show();
-            }
-        });
-    }
-
-    public void ShowMessageWithAppClose(final String title, final String message) {
-        MainActivity.this.runOnUiThread(new Runnable() {
-            public void run() {
-                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(MainActivity.this);
-                dlgAlert.setMessage(message);
-                dlgAlert.setTitle(title);
-                dlgAlert.setPositiveButton("OK", null);
-                dlgAlert.setCancelable(true);
-                dlgAlert.create().show();
-                System.exit(0);
             }
         });
     }
