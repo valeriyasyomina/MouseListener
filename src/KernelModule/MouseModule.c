@@ -19,6 +19,11 @@
 #define KEY_WAS_PRESSED 8
 #define KEY_WAS_RELEASED 0
 
+#define ERROR_REGISTER_PLATFORM_DEVICE -1
+#define ERROR_ALLOCATE_INPUT_DEVICE -2
+#define ERROR_REGISTER_INPUT_DEVICE -3
+#define ERROR_SYSFS_CREATE_GROUP -4
+
 /* Представление устройства ввода */
 /* Representation of an input device */
 struct input_dev *vms_input_dev; 
@@ -103,6 +108,7 @@ static struct attribute_group vms_attr_group =
 /* Driver Initialization */
 static int __init display_init(void)
 {
+	int command_result = 0;
 /* регистрация устройства*/
  /* Register a platform device */
 	vms_dev = platform_device_register_simple("vms", -1, NULL, 0);
@@ -110,16 +116,23 @@ static int __init display_init(void)
 	{
     	PTR_ERR(vms_dev);
     	printk("vms_init: error\n");
+    	return ERROR_REGISTER_PLATFORM_DEVICE;
    	}
   /* Создание файла в sysfs для чтения симулируемых координат */
    /* Create a sysfs node to read simulated coordinates */
-	sysfs_create_group(&vms_dev->dev.kobj, &vms_attr_group);
+	command_result = sysfs_create_group(&vms_dev->dev.kobj, &vms_attr_group);
+	if (command_result < 0)
+	{
+		printk("Error sysfs_create_group\n");
+		return ERROR_SYSFS_CREATE_GROUP;
+	}
   /* Выделение памяти для структур устройства ввода */
     /* Allocate an input device data structure */
     vms_input_dev = input_allocate_device();
     if (!vms_input_dev) 
     {
     	printk("Bad input_alloc_device()\n");
+    	return ERROR_ALLOCATE_INPUT_DEVICE;
     }
   /* Анонс того, что виртуальная мышь будет генерировать 
   координаты связанные с предыдущими*/
@@ -141,7 +154,12 @@ static int __init display_init(void)
   
   /* регистрация в подсистеме ввода */
     /* Register with the input subsystem */
-    input_register_device(vms_input_dev);
+    command_result = input_register_device(vms_input_dev);
+    if (command_result < 0)
+    {
+    	printk("Error input_register_device\n");
+    	return ERROR_REGISTER_INPUT_DEVICE;
+    }
     printk("Virtual Mouse Driver Initialized.\n");
     return 0;
 }
@@ -153,6 +171,7 @@ static void vms_cleanup(void)
   /* Отмена регистрации в подсистеме ввода */
     /* Unregister from the input subsystem */
     input_unregister_device(vms_input_dev);
+    input_free_device(vms_input_dev);
   /* Очистка файла в sysfs */
     /* Cleanup sysfs node */
     sysfs_remove_group(&vms_dev->dev.kobj, &vms_attr_group);
