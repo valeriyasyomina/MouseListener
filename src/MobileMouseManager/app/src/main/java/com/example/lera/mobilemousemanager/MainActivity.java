@@ -17,6 +17,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -99,7 +101,12 @@ public class MainActivity extends AppCompatActivity {
             findServerSocket.close();
 
         } catch (Exception exception) {
-            ShowMessage("Find server exception", "Server not found! Launch server and restart mobile app");
+            if (exception instanceof SocketException)
+                ShowMessage("Network exception", exception.getMessage());
+            else if (exception instanceof SocketTimeoutException)
+                ShowMessage("Find server exception", "Server not found! Launch server and restart mobile app");
+            else
+                ShowMessage("Start app exception", exception.getMessage());
         }
     };
 
