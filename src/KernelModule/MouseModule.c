@@ -114,9 +114,9 @@ static int __init display_init(void)
 	vms_dev = platform_device_register_simple("vms", -1, NULL, 0);
 	if (IS_ERR(vms_dev)) 
 	{
-    	PTR_ERR(vms_dev);
-    	printk("vms_init: error\n");
-    	return ERROR_REGISTER_PLATFORM_DEVICE;
+		PTR_ERR(vms_dev);
+		printk("vms_init: error\n");
+		return ERROR_REGISTER_PLATFORM_DEVICE;
    	}
   /* Создание файла в sysfs для чтения симулируемых координат */
    /* Create a sysfs node to read simulated coordinates */
@@ -178,7 +178,6 @@ static void vms_cleanup(void)
   /* Отмена регистрации драйвера */
     /* Unregister driver */
     platform_device_unregister(vms_dev);
-    return;
 }
 module_init(display_init);
 module_exit(vms_cleanup);
