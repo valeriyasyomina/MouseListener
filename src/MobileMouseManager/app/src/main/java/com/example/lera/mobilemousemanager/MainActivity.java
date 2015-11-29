@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
 
-        FindServer();
+        FindServerThread findServerThread = new FindServerThread();
+        new Thread(findServerThread).start();
     }
 
     private void FindServer() {
@@ -113,71 +114,25 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener leftMouseButtonOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isConnected) {
-                try {
-                    String mouseCommand = Integer.toString(MOUSE_LEFT_BUTTON_PRESS) + " " +
-                            Integer.toString((int) (mouseX * scaleX)) + " " +
-                            Integer.toString((int) (mouseY * scaleY));
-
-                    DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
-                            mouseCommand.length(), serverAddress, UDPPortNumber);
-
-                    serverDatagramSocket.send(datagramPacket);
-
-                } catch (Exception exception) {
-                    ShowMessage("Error send mouse coordinates", exception.getMessage());
-                    DisconnectThread disconnectThread = new DisconnectThread();
-                    new Thread(disconnectThread).start();
-                }
-            }
+            SendMouseCommandThread sendCommandThread = new SendMouseCommandThread(MOUSE_LEFT_BUTTON_PRESS);
+            new Thread(sendCommandThread).start();
         }
     };
 
     View.OnClickListener rightMouseButtonOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isConnected) {
-                try {
-                    String mouseCommand = Integer.toString(MOUSE_RIGHT_BUTTON_PRESS) + " " +
-                            Integer.toString((int) (mouseX * scaleX)) + " " +
-                            Integer.toString((int) (mouseY * scaleY));
-
-                    DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
-                            mouseCommand.length(), serverAddress, UDPPortNumber);
-
-                    serverDatagramSocket.send(datagramPacket);
-
-                } catch (Exception exception) {
-                    ShowMessage("Error send mouse coordinates", exception.getMessage());
-                    DisconnectThread disconnectThread = new DisconnectThread();
-                    new Thread(disconnectThread).start();
-                }
-            }
+            SendMouseCommandThread sendCommandThread = new SendMouseCommandThread(MOUSE_RIGHT_BUTTON_PRESS);
+            new Thread(sendCommandThread).start();
         }
     };
 
     @Override
     public  boolean onTouchEvent(MotionEvent motionEvent) {
-
-        if (isConnected) {
-            try {
-                mouseX = (int) motionEvent.getX();
-                mouseY = (int) motionEvent.getY();
-                String mouseCommand = Integer.toString(MOUSE_MOVE) + " " +
-                        Integer.toString((int) (mouseX * scaleX)) + " " +
-                        Integer.toString((int) (mouseY * scaleY));
-
-                DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
-                        mouseCommand.length(), serverAddress, UDPPortNumber);
-
-                serverDatagramSocket.send(datagramPacket);
-
-            } catch (Exception exception) {
-                ShowMessage("Error send mouse coordinates", exception.getMessage());
-                DisconnectThread disconnectThread = new DisconnectThread();
-                new Thread(disconnectThread).start();
-            }
-        }
+        mouseX = (int) motionEvent.getX();
+        mouseY = (int) motionEvent.getY();
+        SendMouseCommandThread sendCommandThread = new SendMouseCommandThread(MOUSE_MOVE);
+        new Thread(sendCommandThread).start();
         return true;
     }
     @Override
@@ -197,12 +152,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mainTextInfo.setText(savedInstanceState.getString("mainTextInfo"));
-
-        if (savedInstanceState.getBoolean("WasConnected")) {
-
-            ConnectThread connectThread = new ConnectThread();
-            new Thread(connectThread).start();
-        }
     }
 
     @Override
@@ -277,6 +226,38 @@ public class MainActivity extends AppCompatActivity {
                 ShowMessage("Connection error", exception.getMessage());
                 ShowMainAppInfo();
             }
+        }
+    }
+
+    class SendMouseCommandThread implements Runnable {
+        private int mouseCommandType;
+        public  SendMouseCommandThread(int mouseCommandType) {
+            this.mouseCommandType = mouseCommandType;
+        }
+        public void run() {
+            if (isConnected) {
+                try {
+                    String mouseCommand = Integer.toString(mouseCommandType) + " " +
+                            Integer.toString((int) (mouseX * scaleX)) + " " +
+                            Integer.toString((int) (mouseY * scaleY));
+
+                    DatagramPacket datagramPacket = new DatagramPacket(mouseCommand.getBytes(),
+                            mouseCommand.length(), serverAddress, UDPPortNumber);
+
+                    serverDatagramSocket.send(datagramPacket);
+
+                } catch (Exception exception) {
+                    ShowMessage("Error send mouse coordinates", exception.getMessage());
+                    DisconnectThread disconnectThread = new DisconnectThread();
+                    new Thread(disconnectThread).start();
+                }
+            }
+        }
+    }
+
+    class FindServerThread implements Runnable {
+        public void run() {
+            FindServer();
         }
     }
 
