@@ -142,6 +142,14 @@ static int __init display_init(void)
  //   set_bit(ABS_X, vms_input_dev->absbit);
    // set_bit(ABS_Y, vms_input_dev->absbit);
 
+    set_bit(EV_ABS, vms_input_dev->evbit);
+    set_bit(ABS_X, vms_input_dev->absbit);
+    set_bit(ABS_Y, vms_input_dev->absbit);
+
+    set_bit(EV_KEY, vms_input_dev->evbit);
+    set_bit(BTN_LEFT, vms_input_dev->keybit);
+    set_bit(BTN_RIGHT, vms_input_dev->keybit);
+
     vms_input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS); //| BIT_MASK(EV_REL);
     vms_input_dev->keybit[BIT_WORD(BTN_MOUSE)] = BIT_MASK(BTN_LEFT) | BIT_MASK(BTN_RIGHT) | BIT_MASK(BTN_MIDDLE);
    // vms_input_dev->relbit[0] = BIT_MASK(REL_X) | BIT_MASK(REL_Y);
